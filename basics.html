@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PART 1: Java Basics &amp; Fundamentals (Q1–40) — Java Interview Guide</title>
+
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #a855f7;
+    --green: #22c55e;
+    --yellow: #fbbf24;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --code-bg: #0d1117;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* TOPNAV */
+  .topnav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    backdrop-filter: blur(10px);
+    overflow-x: auto;
+  }
+  .topnav::-webkit-scrollbar { display: none; }
+  .nav-logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--accent);
+    margin-right: 32px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-link {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    white-space: nowrap;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .nav-link:hover { color: var(--text); background: var(--surface2); }
+  .nav-link.active { color: #000; }
+
+  /* HEADER */
+  header {
+    padding: 48px 40px 32px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, #0a0e1a 0%, #0f1729 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    opacity: 0.8;
+  }
+  h1 {
+    font-size: clamp(24px, 4vw, 48px);
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+  .subtitle { color: var(--muted); font-size: 15px; max-width: 500px; }
+  .stats-row { display: flex; gap: 20px; margin-top: 24px; flex-wrap: wrap; }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+  }
+  .stat-num { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent); }
+
+  /* CONTROLS */
+  .controls {
+    padding: 16px 40px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    position: sticky;
+    top: 52px;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+  .search-wrap { position: relative; flex: 1; min-width: 180px; max-width: 360px; }
+  .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+  input[type="text"] {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px 8px 34px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type="text"]:focus { border-color: var(--accent); }
+  input[type="text"]::placeholder { color: var(--muted); }
+  .filter-btn {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 13px;
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #000; }
+  .expand-all {
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 13px;
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .expand-all:hover { border-color: var(--accent3); color: var(--accent3); }
+
+  /* LAYOUT */
+  .main { display: flex; }
+  .sidebar {
+    width: 240px;
+    min-width: 240px;
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    position: sticky;
+    top: calc(52px + 56px);
+    height: calc(100vh - 108px);
+    overflow-y: auto;
+    background: var(--surface);
+  }
+  .sidebar::-webkit-scrollbar { width: 3px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .cat-header {
+    padding: 6px 16px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px 6px 24px;
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+    font-weight: 500;
+  }
+  .sidebar-link:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+  .sidebar-link.active { color: var(--accent); border-left-color: var(--accent); background: rgba(0,212,255,0.05); }
+
+  /* CONTENT */
+  .content { flex: 1; padding: 24px 32px; min-width: 0; }
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 24px 0 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: #2a3f60; }
+  .card.open { border-color: #2a4a70; }
+  .card.highlighted { border-color: var(--accent); }
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+  }
+  .card-header:hover { background: var(--surface2); }
+  .q-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    min-width: 28px;
+    font-weight: 600;
+  }
+  .q-title { flex: 1; font-size: 14px; font-weight: 600; }
+  .difficulty {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 3px 7px;
+    border-radius: 4px;
+  }
+  .diff-basic { background: rgba(34,197,94,0.15); color: #22c55e; }
+  .diff-mid { background: rgba(251,191,36,0.15); color: #fbbf24; }
+  .diff-adv { background: rgba(255,107,53,0.15); color: #ff6b35; }
+  .diff-exp { background: rgba(168,85,247,0.15); color: #a855f7; }
+  .chevron { color: var(--muted); transition: transform 0.3s; flex-shrink: 0; }
+  .card.open .chevron { transform: rotate(180deg); }
+  .card-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+  .card.open .card-body { max-height: 9999px; }
+  .card-inner { border-top: 1px solid var(--border); padding: 20px; }
+  .answer p { margin-bottom: 12px; line-height: 1.7; font-size: 14px; }
+  .answer strong { color: #fff; }
+  .answer em { color: var(--accent); font-style: normal; font-weight: 600; }
+  .answer code {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #7dd3fc;
+  }
+  .answer pre {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 12px;
+    line-height: 1.6;
+    overflow-x: auto;
+    margin: 12px 0;
+    color: #e2e8f0;
+    white-space: pre;
+  }
+  .answer table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 13px;
+  }
+  .answer th, .answer td {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+  .answer th { background: var(--surface2); color: var(--accent); font-weight: 700; font-size: 11px; letter-spacing: 0.5px; }
+  .answer tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+  .answer ul, .answer ol { padding-left: 20px; margin: 8px 0 12px; }
+  .answer li { margin-bottom: 6px; line-height: 1.6; font-size: 14px; }
+  .answer h4 { color: var(--accent2); font-size: 13px; margin: 12px 0 6px; }
+  .tip-box {
+    background: rgba(34,197,94,0.08);
+    border: 1px solid rgba(34,197,94,0.2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    margin: 12px 0;
+    line-height: 1.6;
+  }
+  .warn-box {
+    background: rgba(251,191,36,0.08);
+    border: 1px solid rgba(251,191,36,0.2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    margin: 12px 0;
+    line-height: 1.6;
+  }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .tag {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 9px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  /* INDEX PAGE */
+  .index-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .part-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: block;
+    position: relative;
+    overflow: hidden;
+  }
+  .part-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--card-color);
+  }
+  .part-card:hover { border-color: #2a3f60; transform: translateY(-2px); }
+  .part-icon { font-size: 32px; margin-bottom: 14px; }
+  .part-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .part-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+  .part-desc { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+  .part-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--card-color);
+  }
+  .index-hero {
+    padding: 60px 40px 40px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, #0a0e1a 0%, #0f1729 100%);
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+  .index-hero::before {
+    content: '';
+    position: absolute;
+    top: -100px; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 400px;
+    background: radial-gradient(circle, rgba(0,212,255,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0.8;
+  }
+  .hero-title {
+    font-size: clamp(32px, 6vw, 64px);
+    font-weight: 800;
+    line-height: 1.05;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+  .hero-sub { color: var(--muted); font-size: 16px; max-width: 560px; margin: 0 auto 28px; }
+  .hero-stats { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+  .hero-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 20px;
+    text-align: center;
+  }
+  .hero-stat-num { font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 700; color: var(--accent); }
+  .hero-stat-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* BREADCRUMB */
+  .breadcrumb {
+    padding: 12px 40px;
+    font-size: 12px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .breadcrumb a { color: var(--accent); }
+  .breadcrumb a:hover { text-decoration: underline; }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .topnav { padding: 0 16px; }
+    header, .controls { padding-left: 16px; padding-right: 16px; }
+    .content { padding: 16px; }
+    .index-grid { padding: 20px; grid-template-columns: 1fr; }
+    .index-hero { padding: 40px 20px; }
+    .breadcrumb { padding: 10px 16px; }
+  }
+</style>
+
+</head>
+<body>
+<nav class="topnav"><span class="nav-logo">// Java Interview</span><div class="nav-links"><a href="index.html" class="nav-link">🏠 Home</a><a href="basics.html" class="nav-link active" style="background:var(--accent);color:#000;">☕ Basics</a><a href="versions.html" class="nav-link">🚀 Versions</a><a href="oop.html" class="nav-link">🧩 OOP</a><a href="collections.html" class="nav-link">📦 Collections</a><a href="exceptions.html" class="nav-link">⚠️ Exceptions</a><a href="concurrency.html" class="nav-link">⚡ Concurrency</a><a href="advanced-concurrency.html" class="nav-link">🔬 Advanced</a></div></nav>
+<div class="breadcrumb">
+  <a href="index.html">Home</a> › PART 1: Java Basics &amp; Fundamentals (Q1–40)
+</div>
+<header>
+  <div class="header-tag">// Java Interview — Senior Level</div>
+  <h1>☕ PART 1: Java Basics &amp; Fundamentals (Q1–40)</h1>
+  <p class="subtitle">Core Java concepts, OOP fundamentals, memory model, and language basics every Java developer must know.</p>
+  <div class="stats-row">
+    <div class="stat"><span class="stat-num">40</span> Questions</div>
+    <div class='stat'><span class='stat-num'>2</span> Basic</div>
+    <div class='stat'><span class='stat-num'>28</span> Mid</div>
+    <div class='stat'><span class='stat-num'>1</span> Advanced</div>
+    <div class='stat'><span class='stat-num'>9</span> Expert</div>
+  </div>
+</header>
+<div class="controls">
+  <div class="search-wrap">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="searchInput" placeholder="Search questions..." oninput="filterCards()">
+  </div>
+  <button class="filter-btn active" onclick="filterBy('all',this)">All</button>
+  <button class='filter-btn' onclick='filterBy("basic",this)'>Basic</button>
+  <button class='filter-btn' onclick='filterBy("mid",this)'>Mid</button>
+  <button class='filter-btn' onclick='filterBy("adv",this)'>Advanced</button>
+  <button class='filter-btn' onclick='filterBy("exp",this)'>Expert</button>
+  <button class="expand-all" onclick="toggleAll()">Expand All</button>
+</div>
+<div class="main">
+  <aside class="sidebar">
+    <div class="cat-header">Questions</div>
+    <div class="sidebar-link" data-target="q1" onclick="scrollToCard('q1')">Q1. What are the main features of Java?</div>
+<div class="sidebar-link" data-target="q4" onclick="scrollToCard('q4')">Q4. Explain bytecode.</div>
+<div class="sidebar-link" data-target="q7" onclick="scrollToCard('q7')">Q7. What are access modifiers?</div>
+<div class="sidebar-link" data-target="q10" onclick="scrollToCard('q10')">Q10. Why use packages?</div>
+<div class="sidebar-link" data-target="q13" onclick="scrollToCard('q13')">Q13. Difference between class and object?</div>
+<div class="sidebar-link" data-target="q16" onclick="scrollToCard('q16')">Q16. What is polymorphism?</div>
+<div class="sidebar-link" data-target="q19" onclick="scrollToCard('q19')">Q19. What is static keyword?</div>
+<div class="sidebar-link" data-target="q22" onclick="scrollToCard('q22')">Q22. What is a constructor?</div>
+<div class="sidebar-link" data-target="q25" onclick="scrollToCard('q25')">Q25. What is this keyword?</div>
+<div class="sidebar-link" data-target="q28" onclick="scrollToCard('q28')">Q28. What happens if a class is final?</div>
+<div class="sidebar-link" data-target="q31" onclick="scrollToCard('q31')">Q31. Why is String immutable?</div>
+<div class="sidebar-link" data-target="q34" onclick="scrollToCard('q34')">Q34. What are wrapper classes?</div>
+<div class="sidebar-link" data-target="q37" onclick="scrollToCard('q37')">Q37. What is pass-by-value in Java?</div>
+<div class="sidebar-link" data-target="q40" onclick="scrollToCard('q40')">Q40. What is stack memory?</div>
+
+  </aside>
+  <div class="content">
+    
+    <div class="card" id="q1">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">01</span>
+        <span class="q-title">What are the main features of Java?</span>
+        <span class="difficulty diff-exp">EXPERT</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Java is built around several core design goals:</p>
+<p><strong>Platform Independence</strong> – Write Once, Run Anywhere (WORA). Java compiles to bytecode which runs on any JVM regardless of OS/hardware.</p>
+<p><strong>Object-Oriented</strong> – Everything (except primitives) is an object. Supports encapsulation, inheritance, polymorphism, abstraction.</p>
+<p><strong>Strongly Typed</strong> – Every variable must be declared with a type; no implicit type coercion between incompatible types.</p>
+<p><strong>Automatic Memory Management</strong> – Garbage Collector handles heap memory; developers don't call free().</p>
+<p><strong>Multi-threaded</strong> – Built-in thread support via java.lang.Thread and java.util.concurrent.</p>
+<p><strong>Robust</strong> – Exception handling, null safety (to an extent), array bounds checking prevent common bugs.</p>
+<p><strong>Secure</strong> – No pointer arithmetic, bytecode verification, SecurityManager (deprecated in Java 17+), sandboxed classloading.</p>
+<p><strong>Distributed</strong> – RMI, sockets, networking APIs built-in.</p>
+<p><strong>High Performance</strong> – JIT compilation optimizes hot code paths at runtime (C1/C2 compilers).</p>
+<p><strong>Interpreted + Compiled</strong> – Bytecode is interpreted by JVM, but JIT compiles hotspots to native code.</p>
+<p>At senior/10-year level, you should also mention Java's <strong>ecosystem maturity</strong>: Spring, Maven/Gradle, vast library support, LTS releases, corporate backing (Oracle + OpenJDK community).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q2">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">02</span>
+        <span class="q-title">Why is Java platform-independent?</span>
+        <span class="difficulty diff-exp">EXPERT</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Java source code (.java) is compiled by <code>javac</code> into <strong>bytecode</strong> (.class files), not into native machine code. Bytecode is a low-level, intermediate representation that is <strong>architecture-neutral</strong>.</p>
+<p>The <strong>JVM (Java Virtual Machine)</strong> is platform-specific – there are different JVM implementations for Windows, Linux, macOS, ARM, x86. The JVM is the abstraction layer that interprets or JIT-compiles bytecode into native instructions specific to that platform.</p>
+<p>So:</p>
+<ul>
+<li><strong>Source code → bytecode</strong> (platform-independent)</li>
+<li><strong>Bytecode → native code</strong> (done by JVM at runtime, platform-specific)</li>
+</ul>
+<p>Important nuance at senior level: <strong>The JVM itself is NOT platform-independent</strong> – it's written in C/C++ and compiled per platform. It's the bytecode that is portable. Also, <strong>native code</strong> (via JNI/JNA) breaks this portability.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q3">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">03</span>
+        <span class="q-title">What is the difference between JDK, JRE, and JVM?</span>
+        <span class="difficulty diff-exp">EXPERT</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><strong>JVM (Java Virtual Machine)</strong></p>
+<ul>
+<li>Abstract computing machine that executes bytecode</li>
+<li>Manages memory (heap, stack, metaspace), GC, JIT compilation</li>
+<li>Just an execution engine; it cannot compile Java source code</li>
+</ul>
+<p><strong>JRE (Java Runtime Environment)</strong></p>
+<ul>
+<li>JVM + standard class libraries (java.lang, java.util, java.io, etc.)</li>
+<li>Everything needed to <em>run</em> a Java application</li>
+<li>Does NOT include compiler (<code>javac</code>)</li>
+<li>In Java 9+, modular JRE concept; separate JRE distributions are largely deprecated in favor of custom runtimes with <code>jlink</code></li>
+</ul>
+<p><strong>JDK (Java Development Kit)</strong></p>
+<ul>
+<li>JRE + development tools: <code>javac</code>, <code>javadoc</code>, <code>jdb</code>, <code>jar</code>, <code>jshell</code>, profilers, etc.</li>
+<li>Everything needed to <em>develop and run</em> Java applications</li>
+<li>What developers install</li>
+</ul>
+<p>Hierarchy: <strong>JDK ⊃ JRE ⊃ JVM</strong></p>
+<p>Note: In Java 9+, the JDK no longer ships a separate JRE folder. The distinction is more conceptual.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q4">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">04</span>
+        <span class="q-title">Explain bytecode.</span>
+        <span class="difficulty diff-exp">EXPERT</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Bytecode is the <strong>compiled output of Java source code</strong>, stored in <code>.class</code> files. It is:</p>
+<ul>
+<li>A set of instructions for the <strong>Java Virtual Machine</strong> (not for any physical CPU)</li>
+<li>Binary format (not human-readable, but disassemblable with <code>javap -c</code>)</li>
+<li><strong>Platform-neutral</strong>: the same <code>.class</code> file runs on Windows, Linux, macOS</li>
+<li>More compact and faster to execute than re-interpreting source code</li>
+</ul>
+<p>When the JVM starts:</p>
+<ol>
+<li>ClassLoader loads <code>.class</code> files</li>
+<li>Bytecode verifier checks for safety (no illegal operations, type violations)</li>
+<li>JVM interprets bytecode OR the <strong>JIT compiler</strong> compiles frequently-executed ("hot") methods to native machine code</li>
+</ol>
+<p>Example: <code>javap -c HelloWorld.class</code> shows bytecode instructions like <code>invokevirtual</code>, <code>getstatic</code>, <code>ldc</code>, <code>iload</code>, <code>iadd</code>.</p>
+<p>Bytecode also enables tools like <strong>AspectJ</strong> (weaving), <strong>byte-buddy</strong>, <strong>ASM</strong> to modify class behavior at load time or build time.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q5">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">05</span>
+        <span class="q-title">What is the Java execution flow?</span>
+        <span class="difficulty diff-exp">EXPERT</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <pre>1. Write: HelloWorld.java
+2. Compile: javac HelloWorld.java → HelloWorld.class (bytecode)
+3. Classloading: JVM&#x27;s ClassLoader loads .class file
+4. Bytecode Verification: Verifier checks legality
+5. Execution:
+   a. Interpreter: JVM interprets bytecode line by line (slow at start)
+   b. JIT Compilation: HotSpot detects hot methods → C1 (client) → C2 (server) compilation
+   c. Optimized native code runs directly on CPU
+6. GC: Manages heap objects throughout lifetime
+7. JVM shutdown: Runtime.getRuntime().addShutdownHook() callbacks, finalizers (deprecated)</pre>
+<p>At senior level: mention <strong>tiered compilation</strong> (Java 8+). Methods start interpreted, promoted to C1 (fast compile, limited optimization), then C2 (slow compile, heavy optimization) based on profiling counters.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q6">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">06</span>
+        <span class="q-title">Why is Java strongly typed?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Java is strongly typed because:</p>
+<ul>
+<li>Every variable, parameter, return value must have a declared type</li>
+<li>The compiler enforces type correctness at <strong>compile time</strong></li>
+<li>No implicit coercions between unrelated types (e.g., you can't assign a <code>String</code> to an <code>int</code> without explicit conversion)</li>
+</ul>
+<p>Benefits:</p>
+<ul>
+<li><strong>Early error detection</strong>: type errors caught at compile time, not runtime</li>
+<li><strong>IDE support</strong>: autocomplete, refactoring, find usages all rely on type info</li>
+<li><strong>Performance</strong>: JVM can optimize knowing exact types</li>
+<li><strong>Readability</strong>: types serve as documentation</li>
+</ul>
+<p>Java is NOT perfectly type-safe – raw types (pre-generics), casts, and reflection can bypass type checking. That's why generics were added in Java 5 and <code>@SuppressWarnings(&quot;unchecked&quot;)</code> exists.</p>
+<p><strong>Strong vs Static</strong>: Java is both. Strongly typed = strict enforcement. Statically typed = types known at compile time (vs dynamically typed like Python where types are checked at runtime).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q7">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">07</span>
+        <span class="q-title">What are access modifiers?</span>
+        <span class="difficulty diff-basic">BASIC</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Access modifiers control <strong>visibility</strong> of classes, fields, methods, constructors.</p>
+<table>
+<tr><th>Modifier</th><th>Same Class</th><th>Same Package</th><th>Subclass (diff pkg)</th><th>Everywhere</th></tr>
+<tr><td><code>private</code></td><td>✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+<tr><td><code>default</code></td><td>✅</td><td>✅</td><td>❌</td><td>❌</td></tr>
+<tr><td><code>protected</code></td><td>✅</td><td>✅</td><td>✅</td><td>❌</td></tr>
+<tr><td><code>public</code></td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+</table>
+<p>Key senior points:</p>
+<ul>
+<li><strong>Default (package-private)</strong> is often the right choice for internal implementation classes</li>
+<li><code>protected</code> is primarily for inheritance – use sparingly (violates encapsulation)</li>
+<li>Outer classes can only be <code>public</code> or default; inner classes can be any</li>
+<li>Java modules (Java 9+) add another layer: <code>exports</code> in <code>module-info.java</code> controls which packages are accessible even if <code>public</code></li>
+</ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q8">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">08</span>
+        <span class="q-title">Difference between public, protected, default, and private?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>See table above. Key distinctions:</p>
+<p><strong>private</strong>: Tightest scope. Used for fields to enforce encapsulation. Inner classes can access outer class private members.</p>
+<p><strong>default (package-private)</strong>: No keyword. Useful for classes/methods meant to be used only within a package. Common in well-structured libraries.</p>
+<p><strong>protected</strong>: Confusing for beginners. Allows subclass access, but only to the <em>subclass's own inherited members</em>, not to other instances of the parent class in a different package.</p>
+<pre>// In different package:
+class Child extends Parent {
+    void method(Parent p, Child c) {
+        p.protectedField; // ILLEGAL - different package, p is not &#x27;this&#x27;
+        c.protectedField; // LEGAL - c is a Child instance
+        this.protectedField; // LEGAL
+    }
+}</pre>
+<p><strong>public</strong>: API surface. Think carefully before making anything public – it becomes a contract.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q9">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">09</span>
+        <span class="q-title">What is a package?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>A package is a <strong>namespace</strong> that organizes related classes and interfaces. It maps to a directory structure on the filesystem.</p>
+<pre>package com.company.service;</pre>
+<p>Packages serve to:</p>
+<ol>
+<li><strong>Organize code</strong> logically (domain, layer, feature)</li>
+<li><strong>Prevent naming conflicts</strong> – two classes can have the same name if in different packages</li>
+<li><strong>Control access</strong> – package-private (default) access</li>
+<li><strong>Enable selective imports</strong></li>
+</ol>
+<p>Naming convention: reverse domain name (com.google.guava, org.springframework.core).</p>
+<p>In Java 9+, packages are further organized into <strong>modules</strong> (module-info.java). A module controls which packages it exports.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q10">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">10</span>
+        <span class="q-title">Why use packages?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <ul>
+<li><strong>Modularity</strong>: group related functionality</li>
+<li><strong>Encapsulation at package level</strong>: package-private classes/methods hide implementation details</li>
+<li><strong>Avoid name collisions</strong>: <code>com.company.util.StringUtils</code> vs <code>org.apache.commons.lang3.StringUtils</code></li>
+<li><strong>Build tools</strong>: Maven/Gradle use package structure to organize compilation units</li>
+<li><strong>Javadoc</strong>: packages are the unit of documentation</li>
+<li><strong>Java modules (9+)</strong>: packages are the unit of module export</li>
+</ul>
+<p>Design principle: packages should be <strong>cohesive</strong> (related classes together) and <strong>loosely coupled</strong> (minimal cross-package dependencies). Tools like JDepend, ArchUnit can validate this.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q11">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">11</span>
+        <span class="q-title">What is classpath?</span>
+        <span class="difficulty diff-exp">EXPERT</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>The classpath tells the JVM <strong>where to look for .class files and JARs</strong> at runtime (and <code>javac</code> at compile time).</p>
+<pre>java -cp &quot;.:./lib/*:./build/classes&quot; com.example.Main</pre>
+<p>Classpath elements:</p>
+<ul>
+<li>Directories containing .class files</li>
+<li>JAR files</li>
+<li>ZIP files</li>
+</ul>
+<p>In modern development, <strong>build tools (Maven, Gradle) manage the classpath</strong> automatically. Spring Boot's fat JAR bundles all dependencies with a custom classloader.</p>
+<p>Issues with classpath:</p>
+<ul>
+<li><strong>Classpath hell</strong>: multiple JARs with same class – first one on classpath wins</li>
+<li><strong>ClassNotFoundException</strong>: class not found on classpath</li>
+<li><strong>NoClassDefFoundError</strong>: class was present at compile time but missing at runtime</li>
+</ul>
+<p>Java 9+ modules replace classpath with the <strong>module path</strong>, providing stronger isolation.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q12">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">12</span>
+        <span class="q-title">What is an object?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>An object is an <strong>instance of a class</strong> – a runtime entity that has:</p>
+<ul>
+<li><strong>State</strong> (fields/instance variables)</li>
+<li><strong>Behavior</strong> (methods)</li>
+<li><strong>Identity</strong> (unique reference/address in heap memory)</li>
+</ul>
+<pre>Person person = new Person(&quot;Alice&quot;, 30);
+// person -&gt; reference (on stack or as field)
+// Person object -&gt; lives on heap</pre>
+<p>Under the hood: <code>new</code> allocates memory on the <strong>heap</strong>, calls the constructor, returns a reference. The reference is stored on the stack (for local variables) or in another heap object (for fields).</p>
+<p>Object layout in JVM (HotSpot):</p>
+<ul>
+<li><strong>Mark word</strong> (8 bytes): GC info, lock state, hash code</li>
+<li><strong>Class pointer</strong> (4-8 bytes): points to Class metadata</li>
+<li><strong>Instance fields</strong>: actual field values</li>
+<li><strong>Padding</strong>: alignment to 8-byte boundaries</li>
+</ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q13">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">13</span>
+        <span class="q-title">Difference between class and object?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <table>
+<tr><th>Class</th><th>Object</th></tr>
+<tr><td>Blueprint/template</td><td>Instance of a class</td></tr>
+<tr><td>Defined at compile time</td><td>Created at runtime</td></tr>
+<tr><td>Exists once (per ClassLoader)</td><td>Can have many instances</td></tr>
+<tr><td>Stored in Metaspace</td><td>Stored in Heap</td></tr>
+<tr><td><code>class Person {}</code></td><td><code>new Person()</code></td></tr>
+</table>
+<p>A class defines <em>what an object is</em> (structure, behavior). An object <em>is</em> an actual thing with actual data.</p>
+<p>Class itself is an object in Java: <code>Person.class</code> is a <code>java.lang.Class</code> instance, also stored in Metaspace.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q14">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">14</span>
+        <span class="q-title">What is encapsulation?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Encapsulation is the <strong>bundling of data (fields) and methods that operate on that data within a class</strong>, while <strong>hiding the internal state</strong> from outside access.</p>
+<p>Implementation:</p>
+<ul>
+<li>Fields are <code>private</code></li>
+<li>Access via <code>public</code> getters/setters (with validation if needed)</li>
+<li>Internal implementation can change without affecting callers</li>
+</ul>
+<pre>public class BankAccount {
+    private double balance; // hidden
+    
+    public void deposit(double amount) {
+        if (amount &lt;= 0) throw new IllegalArgumentException();
+        this.balance += amount;
+    }
+    
+    public double getBalance() { return balance; }
+}</pre>
+<p>Benefits:</p>
+<ol>
+<li><strong>Control</strong>: validate data before setting (no <code>account.balance = -1000</code>)</li>
+<li><strong>Flexibility</strong>: change internal representation without breaking API</li>
+<li><strong>Maintainability</strong>: localized changes</li>
+</ol>
+<p>Senior note: Records (Java 16+) are immutable data carriers – they encapsulate data without traditional setters. Lombok's <code>@Value</code> achieves similar. Encapsulation doesn't always mean getter/setter – it means <em>controlled access</em>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q15">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">15</span>
+        <span class="q-title">What is inheritance?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Inheritance allows a class (<strong>subclass/child</strong>) to acquire properties and behaviors of another class (<strong>superclass/parent</strong>).</p>
+<pre>public class Vehicle {
+    protected String brand;
+    public void start() { System.out.println(&quot;Starting &quot; + brand); }
+}
+
+public class Car extends Vehicle {
+    private int doors;
+    
+    @Override
+    public void start() {
+        super.start();
+        System.out.println(&quot;Car started with &quot; + doors + &quot; doors&quot;);
+    }
+}</pre>
+<p>Java supports <strong>single inheritance</strong> for classes (unlike C++), but multiple inheritance for interfaces.</p>
+<p>Types in Java:</p>
+<ul>
+<li><strong>Single</strong>: A extends B</li>
+<li><strong>Multilevel</strong>: A extends B, B extends C</li>
+<li><strong>Hierarchical</strong>: B extends A, C extends A</li>
+<li><strong>No multiple class inheritance</strong> (diamond problem avoided)</li>
+</ul>
+<p>When NOT to use inheritance: "Is-A" relationship must be genuine. <code>Stack extends Vector</code> in Java is a famous mistake (a Stack is NOT a Vector from behavioral standpoint). Prefer composition.</p>
+<p><strong>IS-A test</strong>: Can you substitute subclass wherever superclass is expected? (Liskov Substitution Principle)</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q16">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">16</span>
+        <span class="q-title">What is polymorphism?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Polymorphism means "<strong>many forms</strong>" – the ability of a reference to behave differently based on the actual object it points to.</p>
+<p><strong>Compile-time polymorphism (static dispatch)</strong>: Method overloading</p>
+<pre>void print(int x) {}
+void print(String s) {}
+// Resolved at compile time based on argument types</pre>
+<p><strong>Runtime polymorphism (dynamic dispatch)</strong>: Method overriding</p>
+<pre>Animal animal = new Dog(); // Animal reference, Dog object
+animal.speak(); // calls Dog.speak(), not Animal.speak()
+// Resolved at runtime via virtual method table (vtable)</pre>
+<p>Under the hood: JVM uses <strong>virtual method tables (vtable)</strong>. Each object has a pointer to its class's vtable, which maps method signatures to actual implementations.</p>
+<p>Polymorphism enables <strong>Open/Closed Principle</strong>: add new behavior (new subclass) without modifying existing code that works with the base type.</p>
+<p><strong>Covariant return types</strong> (Java 5+): overriding method can return a subtype.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q17">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">17</span>
+        <span class="q-title">What is abstraction?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Abstraction means <strong>hiding implementation complexity and exposing only essential features</strong>.</p>
+<p>Two mechanisms in Java:</p>
+<ol>
+<li><strong>Abstract classes</strong> (0–100% abstract)</li>
+<li><strong>Interfaces</strong> (100% abstract pre-Java 8; can have defaults now)</li>
+</ol>
+<pre>// Abstract class
+public abstract class Shape {
+    abstract double area(); // must be implemented
+    
+    void printArea() { // concrete method
+        System.out.println(&quot;Area: &quot; + area());
+    }
+}
+
+// Interface
+public interface Drawable {
+    void draw(); // abstract
+    default void drawWithBorder() { draw(); } // default
+}</pre>
+<p>Abstraction at design level: programming to interfaces, not implementations. <code>List&lt;String&gt; list = new ArrayList&lt;&gt;()</code> – caller doesn't need to know it's an ArrayList.</p>
+<p>Abstraction is about <strong>"what" not "how"</strong>. Encapsulation is about <strong>hiding "how"</strong>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q18">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">18</span>
+        <span class="q-title">Difference between method overloading and overriding?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <table>
+<tr><th>Aspect</th><th>Overloading</th><th>Overriding</th></tr>
+<tr><td>Definition</td><td>Same name, different parameters</td><td>Same signature in subclass</td></tr>
+<tr><td>Resolution</td><td>Compile time (static dispatch)</td><td>Runtime (dynamic dispatch)</td></tr>
+<tr><td>Inheritance</td><td>Not required</td><td>Required</td></tr>
+<tr><td>Return type</td><td>Can differ</td><td>Must be same or covariant</td></tr>
+<tr><td>Access modifier</td><td>Can differ freely</td><td>Can't be more restrictive</td></tr>
+<tr><td>Static methods</td><td>Can be overloaded</td><td>Cannot be overridden (hidden)</td></tr>
+<tr><td>Exception</td><td>No restriction</td><td>Can't add new checked exceptions</td></tr>
+</table>
+<p><strong>Overloading pitfall</strong>: Widening + autoboxing + varargs precedence rules are complex:</p>
+<pre>void test(long x) {}
+void test(Integer x) {}
+test(5); // calls test(long) - widening takes priority over autoboxing</pre>
+<p><strong>Overriding rules</strong>:</p>
+<ul>
+<li><code>@Override</code> annotation is highly recommended (compile-time check)</li>
+<li><code>private</code>, <code>static</code>, <code>final</code> methods cannot be overridden</li>
+<li>Overriding method can't throw broader checked exceptions</li>
+<li>Covariant return types allowed (return subtype)</li>
+</ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q19">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">19</span>
+        <span class="q-title">What is static keyword?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><code>static</code> means the member <strong>belongs to the class</strong>, not to any instance.</p>
+<p><strong>Static fields</strong>: Shared across all instances; one copy per class</p>
+<pre>public class Counter {
+    private static int count = 0; // class-level
+    public Counter() { count++; }
+    public static int getCount() { return count; }
+}</pre>
+<p><strong>Static methods</strong>: Can be called without instance; can only access static members directly</p>
+<p><strong>Static blocks</strong>: Run once when class is loaded</p>
+<p><strong>Static inner classes</strong>: No reference to outer class instance</p>
+<p><strong>Static imports</strong>: <code>import static java.lang.Math.PI;</code></p>
+<p>Memory: Static fields stored in <strong>Metaspace</strong> (Java 8+), not heap. (In Java 7 and earlier, in PermGen.)</p>
+<p>Use cases: utility methods (Math, Collections), constants, factory methods, Singleton pattern, counters.</p>
+<p>Pitfalls: Static state is shared globally → thread safety issues, harder to test (can't inject mock), memory leaks (static collections holding references).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q20">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">20</span>
+        <span class="q-title">Can a static method be overridden?</span>
+        <span class="difficulty diff-basic">BASIC</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><strong>No.</strong> Static methods cannot be overridden – they can only be <strong>hidden</strong>.</p>
+<pre>class Parent {
+    static void greet() { System.out.println(&quot;Parent&quot;); }
+}
+class Child extends Parent {
+    static void greet() { System.out.println(&quot;Child&quot;); } // HIDING, not overriding
+}
+
+Parent p = new Child();
+p.greet(); // Prints &quot;Parent&quot; -- resolved at compile time based on reference type</pre>
+<p>This is <strong>method hiding</strong>, not overriding. Static methods are resolved at <strong>compile time</strong> based on the reference type, not at runtime based on the object type.</p>
+<p><code>@Override</code> on a static method causes a compile error.</p>
+<p>Why? Runtime polymorphism (dynamic dispatch) requires a vtable lookup based on the object's actual class. Static methods are bound to the class, not the object – there's no vtable involvement.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q21">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">21</span>
+        <span class="q-title">Why is main() static?</span>
+        <span class="difficulty diff-exp">EXPERT</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><code>main()</code> is <code>static</code> so the JVM can invoke it <strong>without creating an instance of the class</strong>.</p>
+<p>When the JVM starts, it:</p>
+<ol>
+<li>Loads the class</li>
+<li>Calls <code>public static void main(String[] args)</code> directly</li>
+</ol>
+<p>If <code>main()</code> were an instance method, the JVM would need to instantiate the class first – but which constructor to call? What arguments? By making it static, this bootstrapping problem is avoided.</p>
+<p>Note (Java 21+): With <strong>unnamed classes</strong> (JEP 445, preview), you can write:</p>
+<pre>void main() {
+    System.out.println(&quot;Hello&quot;);
+}</pre>
+<p>The JVM handles the static entrypoint transparently. But in standard Java, <code>public static void main(String[] args)</code> is required.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q22">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">22</span>
+        <span class="q-title">What is a constructor?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>A constructor is a <strong>special method</strong> used to initialize an object when it is created with <code>new</code>.</p>
+<p>Properties:</p>
+<ul>
+<li>Same name as the class</li>
+<li>No return type (not even <code>void</code>)</li>
+<li>Called automatically by <code>new</code></li>
+<li>Can be overloaded (multiple constructors)</li>
+<li>Can call other constructors with <code>this()</code> or <code>super()</code> (must be first statement)</li>
+</ul>
+<pre>public class Person {
+    private String name;
+    private int age;
+    
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+    
+    // Delegating constructor
+    public Person(String name) {
+        this(name, 0); // calls above constructor
+    }
+}</pre>
+<p>If no constructor is defined, the compiler adds a <strong>default no-arg constructor</strong>. If any constructor is defined, the default is NOT added.</p>
+<p>Constructors are NOT inherited. Subclass constructor must call <code>super(...)</code> explicitly or the compiler inserts <code>super()</code> (which requires a no-arg parent constructor).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q23">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">23</span>
+        <span class="q-title">Constructor vs method?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <table>
+<tr><th>Constructor</th><th>Method</th></tr>
+<tr><td>Same name as class</td><td>Any valid name</td></tr>
+<tr><td>No return type</td><td>Must have return type</td></tr>
+<tr><td>Called by <code>new</code></td><td>Called on object/class</td></tr>
+<tr><td>Used for initialization</td><td>Used for behavior</td></tr>
+<tr><td>Not inherited</td><td>Inherited (if not private)</td></tr>
+<tr><td>Not called on existing object</td><td>Called on existing object</td></tr>
+<tr><td><code>this()</code>/<code>super()</code> allowed</td><td>Not applicable</td></tr>
+</table>
+<p>Constructors ARE methods in bytecode terms (they appear as <code>&lt;init&gt;</code> in the class file). The JVM invokes them via <code>invokespecial</code>.</p>
+<p>Static initializer blocks (<code>static {}</code>) run before the constructor, at class loading time.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q24">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">24</span>
+        <span class="q-title">Types of constructors?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <ol>
+<li><strong>Default constructor</strong>: No-arg, inserted by compiler if none defined</li>
+</ol>
+<pre>class Foo {} // compiler adds: Foo() { super(); }</pre>
+<ol>
+<li><strong>No-arg constructor</strong>: Explicitly written with no parameters</li>
+</ol>
+<pre>class Foo { public Foo() { init(); } }</pre>
+<ol>
+<li><strong>Parameterized constructor</strong>: Takes arguments</li>
+</ol>
+<pre>class Foo { public Foo(String name, int value) {} }</pre>
+<ol>
+<li><strong>Copy constructor</strong>: Takes an instance of the same class</li>
+</ol>
+<pre>class Foo {
+    String data;
+    public Foo(Foo other) { this.data = other.data; }
+}</pre>
+<p>Java doesn't have built-in copy constructor support (unlike C++), but it's a common pattern.</p>
+<ol>
+<li><strong>Private constructor</strong>: Prevents instantiation (Singleton, utility classes)</li>
+</ol>
+<pre>class MathUtils { private MathUtils() {} }</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q25">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">25</span>
+        <span class="q-title">What is this keyword?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><code>this</code> refers to the <strong>current instance</strong> of the class.</p>
+<p>Uses:</p>
+<ol>
+<li><strong>Disambiguate field vs parameter</strong>:</li>
+</ol>
+<pre>public Person(String name) { this.name = name; }</pre>
+<ol>
+<li><strong>Call another constructor</strong> (<code>this()</code> – must be first statement):</li>
+</ol>
+<pre>public Person() { this(&quot;Unknown&quot;, 0); }</pre>
+<ol>
+<li><strong>Pass current instance</strong> to another method/constructor:</li>
+</ol>
+<pre>EventBus.register(this);</pre>
+<ol>
+<li><strong>Return current instance</strong> (method chaining / fluent API):</li>
+</ol>
+<pre>public Builder name(String n) { this.name = n; return this; }</pre>
+<p><code>this</code> is implicit in all instance method calls and field accesses. It's a reference stored in the local variable slot 0 of every instance method.</p>
+<p><code>this</code> cannot be used in static context (no instance exists).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q26">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">26</span>
+        <span class="q-title">What is super keyword?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><code>super</code> refers to the <strong>parent class</strong> (immediate superclass).</p>
+<p>Uses:</p>
+<ol>
+<li><strong>Access parent class field</strong> (when shadowed by subclass):</li>
+</ol>
+<pre>class Parent { String name = &quot;Parent&quot;; }
+class Child extends Parent {
+    String name = &quot;Child&quot;;
+    void print() { System.out.println(super.name); } // &quot;Parent&quot;
+}</pre>
+<ol>
+<li><strong>Call parent class method</strong> (when overridden):</li>
+</ol>
+<pre>@Override
+public String toString() {
+    return super.toString() + &quot; [extended]&quot;;
+}</pre>
+<ol>
+<li><strong>Call parent constructor</strong> (<code>super()</code> – must be first statement in constructor):</li>
+</ol>
+<pre>public Dog(String name) {
+    super(name); // calls Animal(String name)
+}</pre>
+<p>If subclass constructor doesn't call <code>super(...)</code>, compiler inserts <code>super()</code> (no-arg) automatically. If parent has no no-arg constructor, compile error.</p>
+<p><code>super</code> cannot be used in static context.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q27">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">27</span>
+        <span class="q-title">What is a final variable?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>A <code>final</code> variable can be <strong>assigned only once</strong>.</p>
+<p>Types:</p>
+<ol>
+<li><strong>final local variable</strong>: Must be assigned before use; can be assigned in any branch as long as it's assigned exactly once</li>
+<li><strong>final instance variable</strong>: Must be assigned in constructor or initializer; effectively makes the reference constant (not the object it points to)</li>
+<li><strong>final static variable (constant)</strong>: <code>public static final double PI = 3.14159;</code></li>
+</ol>
+<pre>final List&lt;String&gt; list = new ArrayList&lt;&gt;();
+list.add(&quot;item&quot;); // OK - modifying the object
+list = new LinkedList&lt;&gt;(); // COMPILE ERROR - can&#x27;t reassign reference</pre>
+<p>Blank final: <code>private final int x;</code> – assigned in constructor. Allows different values per instance while being immutable after construction.</p>
+<p>JVM optimization: <code>final</code> fields get special treatment in Java Memory Model – their values are guaranteed to be visible to all threads without synchronization after the constructor completes (as long as <code>this</code> doesn't escape).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q28">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">28</span>
+        <span class="q-title">What happens if a class is final?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>A <code>final class</code> <strong>cannot be subclassed</strong>.</p>
+<pre>public final class String { ... }
+public final class Integer { ... }</pre>
+<p>Uses:</p>
+<ol>
+<li><strong>Security</strong>: Prevents malicious subclassing (someone overriding sensitive methods)</li>
+<li><strong>Immutability</strong>: String's immutability relies on it being final (can't subclass and add mutability)</li>
+<li><strong>Performance</strong>: JVM can devirtualize method calls (no vtable lookup needed)</li>
+<li><strong>API stability</strong>: Express that the class is a leaf in the hierarchy</li>
+</ol>
+<p>All methods of a final class are implicitly final (they can't be overridden since there are no subclasses).</p>
+<p>Sealed classes (Java 17+) are a more nuanced alternative: restrict which classes can extend, rather than completely prohibiting extension.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q29">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">29</span>
+        <span class="q-title">Can constructors be final?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><strong>No.</strong> Constructors cannot be <code>final</code>, <code>static</code>, or <code>abstract</code>.</p>
+<p>Reasoning:</p>
+<ul>
+<li><code>final</code> prevents overriding, but constructors aren't inherited and can't be overridden anyway</li>
+<li><code>static</code> is meaningless since constructors are always tied to instance creation</li>
+<li><code>abstract</code> requires implementation in subclass, but constructors aren't inherited</li>
+</ul>
+<p>If you want to prevent subclassing (which is what you might think <code>final constructor</code> achieves), make the <strong>class</strong> <code>final</code>.</p>
+<p>If you want to prevent instantiation, make the <strong>constructor</strong> <code>private</code>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q30">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">30</span>
+        <span class="q-title">What is an immutable object?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>An immutable object's <strong>state cannot change after construction</strong>.</p>
+<p>How to make a class immutable:</p>
+<ol>
+<li>Declare class <code>final</code> (prevent subclass from adding mutability)</li>
+<li>All fields <code>private final</code></li>
+<li>No setters</li>
+<li>Constructor performs <strong>deep copy</strong> of mutable inputs</li>
+<li>Accessors return <strong>defensive copies</strong> of mutable fields</li>
+<li>Don't allow <code>this</code> to escape during construction</li>
+</ol>
+<pre>public final class Money {
+    private final BigDecimal amount;
+    private final Currency currency;
+    
+    public Money(BigDecimal amount, Currency currency) {
+        this.amount = Objects.requireNonNull(amount);
+        this.currency = Objects.requireNonNull(currency);
+    }
+    
+    public BigDecimal getAmount() { return amount; }
+    public Currency getCurrency() { return currency; }
+    
+    public Money add(Money other) {
+        // Return new instance instead of modifying
+        return new Money(this.amount.add(other.amount), this.currency);
+    }
+}</pre>
+<p>Benefits: <strong>inherently thread-safe</strong>, can be freely shared, safe as HashMap key, easier to reason about.</p>
+<p>Java examples: <code>String</code>, <code>Integer</code>, <code>BigDecimal</code>, <code>LocalDate</code>, <code>InetAddress</code>.</p>
+<p>Records (Java 16+) make immutable data carriers concise.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q31">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">31</span>
+        <span class="q-title">Why is String immutable?</span>
+        <span class="difficulty diff-exp">EXPERT</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>String immutability is a deliberate design decision with multiple motivations:</p>
+<ol>
+<li><strong>String Pool optimization</strong>: JVM maintains a pool of String literals. If Strings were mutable, changing one reference's string would affect all references pointing to the same pool object.</li>
+</ol>
+<ol>
+<li><strong>Thread safety</strong>: Immutable objects are inherently thread-safe. Strings are shared across threads constantly (class names, log messages, etc.).</li>
+</ol>
+<ol>
+<li><strong>HashMap/HashSet keys</strong>: String's hashCode is cached. If String were mutable, changing a String key would make it un-findable in a HashMap (the bucket would be wrong).</li>
+</ol>
+<ol>
+<li><strong>Security</strong>: Filenames, class names, network connections – if a String passed to a security check could be mutated, the check could be bypassed.</li>
+</ol>
+<ol>
+<li><strong>ClassLoader integrity</strong>: Class names are Strings. Mutable class names could break the loading mechanism.</li>
+</ol>
+<p>Implementation: <code>String</code> stores characters in a <code>private final char[]</code> (Java 8) or <code>private final byte[]</code> (Java 9+, compact strings). The array is private and never returned directly.</p>
+<p>For mutable string operations: use <code>StringBuilder</code> (not thread-safe, faster) or <code>StringBuffer</code> (thread-safe, slower).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q32">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">32</span>
+        <span class="q-title">Difference between == and .equals()?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><strong><code>==</code></strong>: Compares <strong>references</strong> (memory addresses) for objects, or <strong>values</strong> for primitives.</p>
+<pre>String a = new String(&quot;hello&quot;);
+String b = new String(&quot;hello&quot;);
+a == b; // false - different objects on heap</pre>
+<p><strong><code>.equals()</code></strong>: Compares <strong>logical equality</strong> (content), as defined by the class's <code>equals()</code> implementation.</p>
+<pre>a.equals(b); // true - same content</pre>
+<p><strong>String pool trap</strong>:</p>
+<pre>String x = &quot;hello&quot;; // pool
+String y = &quot;hello&quot;; // same pool object
+x == y; // true (same reference, pool optimization)
+x == new String(&quot;hello&quot;); // false</pre>
+<p>Default <code>Object.equals()</code> is the same as <code>==</code>. Classes must override it for meaningful equality.</p>
+<p><code>null</code> handling: <code>&quot;hello&quot;.equals(null)</code> returns false (safe); <code>null.equals(&quot;hello&quot;)</code> throws NPE. Use <code>Objects.equals(a, b)</code> for null-safe comparison.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q33">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">33</span>
+        <span class="q-title">Why override hashCode() when overriding equals()?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>The <strong>general contract</strong> (from <code>java.lang.Object</code> Javadoc):</p>
+<ul>
+<li>If <code>a.equals(b)</code> is true, then <code>a.hashCode() == b.hashCode()</code> MUST be true</li>
+<li>If <code>a.hashCode() != b.hashCode()</code>, then <code>a.equals(b)</code> MUST be false</li>
+<li>Equal objects must produce the same hash code</li>
+</ul>
+<p><strong>What breaks if you don't?</strong></p>
+<p>HashMap, HashSet, Hashtable use <code>hashCode()</code> to find the bucket, then <code>equals()</code> to find the exact key:</p>
+<pre>Map&lt;Person, String&gt; map = new HashMap&lt;&gt;();
+Person p1 = new Person(&quot;Alice&quot;, 30);
+map.put(p1, &quot;Engineer&quot;);
+
+Person p2 = new Person(&quot;Alice&quot;, 30); // &quot;equal&quot; to p1
+map.get(p2); // returns null if hashCode not overridden!
+// p2.hashCode() != p1.hashCode() → different bucket → not found</pre>
+<p>Best practice for <code>hashCode()</code>:</p>
+<ul>
+<li>Use all fields used in <code>equals()</code></li>
+<li>Use <code>Objects.hash(field1, field2, ...)</code> (easy but slightly slower)</li>
+<li>Or manual: <code>31 * result + field.hashCode()</code> (31 is a prime, reduces collisions)</li>
+<li>IDEs and Lombok can generate these</li>
+</ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q34">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">34</span>
+        <span class="q-title">What are wrapper classes?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Wrapper classes wrap primitive types into objects.</p>
+<table>
+<tr><th>Primitive</th><th>Wrapper</th></tr>
+<tr><td><code>byte</code></td><td><code>Byte</code></td></tr>
+<tr><td><code>short</code></td><td><code>Short</code></td></tr>
+<tr><td><code>int</code></td><td><code>Integer</code></td></tr>
+<tr><td><code>long</code></td><td><code>Long</code></td></tr>
+<tr><td><code>float</code></td><td><code>Float</code></td></tr>
+<tr><td><code>double</code></td><td><code>Double</code></td></tr>
+<tr><td><code>char</code></td><td><code>Character</code></td></tr>
+<tr><td><code>boolean</code></td><td><code>Boolean</code></td></tr>
+</table>
+<p>Why needed:</p>
+<ol>
+<li><strong>Generics</strong> require objects (<code>List&lt;Integer&gt;</code>, not <code>List&lt;int&gt;</code>)</li>
+<li><strong>Null value</strong>: primitives can't be null; wrappers can</li>
+<li><strong>Utility methods</strong>: <code>Integer.parseInt()</code>, <code>Integer.toBinaryString()</code>, <code>Double.isNaN()</code></li>
+<li><strong>Collections</strong>: Only work with objects</li>
+<li><strong>Reflection</strong>: Method parameters/return types use wrapper classes</li>
+</ol>
+<p>Wrapper classes are <strong>immutable</strong> and have a <strong>cache</strong>:</p>
+<ul>
+<li><code>Integer.valueOf(int)</code> caches values from -128 to 127 (configurable via <code>-XX:AutoBoxCacheMax</code>)</li>
+<li>Same for <code>Byte</code>, <code>Short</code>, <code>Long</code>, <code>Character</code> (0–127)</li>
+<li><code>Boolean.TRUE</code> and <code>Boolean.FALSE</code> are singletons</li>
+</ul>
+<pre>Integer a = 127; Integer b = 127; a == b; // true (cached)
+Integer c = 128; Integer d = 128; c == d; // false (not cached)</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q35">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">35</span>
+        <span class="q-title">Autoboxing vs unboxing?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><strong>Autoboxing</strong>: Automatic conversion from primitive to wrapper by the compiler.</p>
+<pre>Integer x = 5; // compiler: Integer x = Integer.valueOf(5);
+List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+list.add(3); // compiler: list.add(Integer.valueOf(3));</pre>
+<p><strong>Unboxing</strong>: Automatic conversion from wrapper to primitive.</p>
+<pre>Integer y = Integer.valueOf(10);
+int z = y; // compiler: int z = y.intValue();
+int sum = y + 5; // y is unboxed</pre>
+<p><strong>Pitfalls</strong>:</p>
+<ol>
+<li><strong>NullPointerException</strong>:</li>
+</ol>
+<pre>Integer value = null;
+int result = value; // NPE at runtime during unboxing</pre>
+<ol>
+<li><strong>Performance</strong>: Autoboxing in loops creates many objects</li>
+</ol>
+<pre>Long sum = 0L; // wrapper
+for (long i = 0; i &lt; 1_000_000; i++) sum += i; // creates ~1M Long objects!
+// Use: long sum = 0L;</pre>
+<ol>
+<li><strong>== comparison confusion</strong>:</li>
+</ol>
+<pre>Integer a = 1000, b = 1000;
+a == b; // false (not cached), use a.equals(b)</pre>
+<ol>
+<li><strong>Overload resolution surprises</strong>: Autoboxing has lower priority than widening in overload selection.</li>
+</ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q36">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">36</span>
+        <span class="q-title">Difference between primitive and object?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <table>
+<tr><th>Aspect</th><th>Primitive</th><th>Object</th></tr>
+<tr><td>Types</td><td>8 types (int, long, etc.)</td><td>Any class</td></tr>
+<tr><td>Memory</td><td>Stack (local vars)</td><td>Heap</td></tr>
+<tr><td>Default value</td><td>0, false, '\0'</td><td>null</td></tr>
+<tr><td>Nullable</td><td>No</td><td>Yes</td></tr>
+<tr><td>Generics</td><td>Not directly</td><td>Yes</td></tr>
+<tr><td>Method calls</td><td>No</td><td>Yes</td></tr>
+<tr><td>Performance</td><td>Faster</td><td>Slower (heap alloc, GC)</td></tr>
+<tr><td>Size</td><td>Fixed (int=4 bytes)</td><td>Variable (object header overhead)</td></tr>
+</table>
+<p>Primitives are <strong>value types</strong>: when assigned/passed, the value is copied.</p>
+<p>Objects are <strong>reference types</strong>: when assigned/passed, the reference is copied (both point to same object).</p>
+<p>Java (pre-Valhalla) has no user-defined value types. <strong>Project Valhalla</strong> (Java 23+ preview) introduces <strong>value classes</strong> – user-defined types with primitive-like performance.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q37">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">37</span>
+        <span class="q-title">What is pass-by-value in Java?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Java is <strong>strictly pass-by-value</strong>. Always. No exceptions.</p>
+<p>For <strong>primitives</strong>: The value is copied.</p>
+<pre>void modify(int x) { x = 99; }
+int a = 5; modify(a); // a is still 5</pre>
+<p>For <strong>objects</strong>: The <strong>reference value</strong> (memory address) is copied. The method receives a copy of the reference, both pointing to the same object.</p>
+<pre>void modify(List&lt;String&gt; list) { list.add(&quot;new&quot;); }
+// This DOES modify the original list - same object is modified
+
+void reassign(List&lt;String&gt; list) { list = new ArrayList&lt;&gt;(); }
+// This does NOT affect the caller - local reference is reassigned</pre>
+<p>The confusion: because both references point to the same object, mutations via the reference are visible. But the reference itself is passed by value – you can't make the caller's reference point to a different object.</p>
+<p>This is different from pass-by-reference (C++, C# <code>ref</code>), where you get a reference to the caller's variable.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q38">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">38</span>
+        <span class="q-title">Can Java simulate pass-by-reference?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Java cannot truly do pass-by-reference, but you can simulate effects:</p>
+<ol>
+<li><strong>Return the modified value</strong>:</li>
+</ol>
+<pre>int increment(int x) { return x + 1; }</pre>
+<ol>
+<li><strong>Wrap in a mutable container</strong> (array trick):</li>
+</ol>
+<pre>void increment(int[] x) { x[0]++; }
+int[] val = {5}; increment(val); // val[0] is now 6</pre>
+<ol>
+<li><strong>Use AtomicInteger or a holder class</strong>:</li>
+</ol>
+<pre>void increment(AtomicInteger x) { x.incrementAndGet(); }</pre>
+<ol>
+<li><strong>Return multiple values via a record/tuple</strong>:</li>
+</ol>
+<pre>record Pair(int a, int b) {}
+Pair swap(int a, int b) { return new Pair(b, a); }</pre>
+<p>These are all workarounds – Java is fundamentally pass-by-value and this is by design (simpler, safer).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q39">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">39</span>
+        <span class="q-title">What is heap memory?</span>
+        <span class="difficulty diff-exp">EXPERT</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>The <strong>heap</strong> is the JVM's runtime memory area where <strong>all objects and arrays</strong> are allocated.</p>
+<p>Structure (generational GC):</p>
+<ul>
+<li><strong>Young Generation</strong>: Newly created objects</li>
+<li><strong>Eden space</strong>: Where objects are born</li>
+<li><strong>Survivor spaces (S0, S1)</strong>: Objects that survive minor GC</li>
+<li><strong>Old Generation (Tenured)</strong>: Long-lived objects promoted from Young Gen</li>
+<li><strong>Metaspace</strong> (Java 8+): Class metadata (not technically heap, but JVM-managed)</li>
+</ul>
+<p>Heap sizing:</p>
+<pre>-Xms512m  # initial heap size
+-Xmx4g    # maximum heap size
+-Xmn256m  # young generation size</pre>
+<p>Objects on heap are managed by the <strong>Garbage Collector</strong>. Heap is shared across all threads.</p>
+<p><strong>Heap tuning considerations</strong>: Large heap → long GC pauses (with stop-the-world collectors). Balance between heap size and GC pause time. G1/ZGC/Shenandoah designed to minimize pauses.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q40">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">40</span>
+        <span class="q-title">What is stack memory?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>The <strong>stack</strong> holds <strong>method execution frames</strong>. Each thread has its own stack.</p>
+<p>Each frame contains:</p>
+<ul>
+<li><strong>Local variables</strong> (including primitives and object references)</li>
+<li><strong>Operand stack</strong> (working area for computations)</li>
+<li><strong>Reference to runtime constant pool</strong></li>
+<li><strong>Return address</strong></li>
+</ul>
+<p>Properties:</p>
+<ul>
+<li><strong>Thread-private</strong>: No sharing, no synchronization needed</li>
+<li><strong>LIFO</strong>: Frames pushed on method call, popped on return</li>
+<li><strong>Fixed size per thread</strong>: Default typically 256KB–1MB (<code>-Xss</code> flag)</li>
+<li><strong>Fast</strong>: Allocation/deallocation is just pointer movement</li>
+</ul>
+<p><code>StackOverflowError</code>: Stack exhausted (deep/infinite recursion).</p>
+<p>Objects themselves don't live on the stack. Only primitive values and object references live on the stack. However, <strong>escape analysis</strong> (JIT optimization) can allocate objects on the stack if they don't escape the method – called <strong>stack allocation</strong> or <strong>scalar replacement</strong>.</p>
+<pre>Thread 1 Stack:     Thread 2 Stack:     Heap (shared):
+[main frame]        [main frame]        [Object A]
+[methodA frame]     [processData frame] [Object B]</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="height:60px"></div>
+  </div>
+</div>
+
+<script>
+function toggle(header) {
+  const card = header.parentElement;
+  card.classList.toggle('open');
+}
+let allExpanded = false;
+function toggleAll() {
+  allExpanded = !allExpanded;
+  document.querySelectorAll('.card').forEach(c => {
+    if (allExpanded) c.classList.add('open'); else c.classList.remove('open');
+  });
+  const btn = document.querySelector('.expand-all');
+  if (btn) btn.textContent = allExpanded ? 'Collapse All' : 'Expand All';
+}
+let activeFilter = 'all';
+function filterBy(level, btn) {
+  activeFilter = level;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+function filterCards() { applyFilters(); }
+function applyFilters() {
+  const input = document.getElementById('searchInput');
+  const query = input ? input.value.toLowerCase() : '';
+  document.querySelectorAll('.card').forEach(card => {
+    const title = card.querySelector('.q-title') ? card.querySelector('.q-title').textContent.toLowerCase() : '';
+    const body = card.querySelector('.answer') ? card.querySelector('.answer').textContent.toLowerCase() : '';
+    const diff = card.querySelector('.difficulty');
+    const diffClass = diff ? diff.className : '';
+    const matchesText = !query || title.includes(query) || body.includes(query);
+    const matchesFilter = activeFilter === 'all' || diffClass.includes('diff-' + activeFilter);
+    if (matchesText && matchesFilter) {
+      card.style.display = '';
+      if (query) card.classList.add('open');
+    } else {
+      card.style.display = 'none';
+    }
+  });
+  document.querySelectorAll('.section-title').forEach(st => {
+    let next = st.nextElementSibling;
+    let hasVisible = false;
+    while (next && !next.classList.contains('section-title')) {
+      if (next.style.display !== 'none') hasVisible = true;
+      next = next.nextElementSibling;
+    }
+    st.style.display = hasVisible ? '' : 'none';
+  });
+}
+function scrollToCard(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    el.classList.add('open', 'highlighted');
+    setTimeout(() => el.classList.remove('highlighted'), 2000);
+    document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+    const link = document.querySelector('.sidebar-link[data-target="' + id + '"]');
+    if (link) link.classList.add('active');
+  }
+}
+const observer = typeof IntersectionObserver !== 'undefined' ? new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+      const link = document.querySelector('.sidebar-link[data-target="' + id + '"]');
+      if (link) link.classList.add('active');
+    }
+  });
+}, { threshold: 0.3, rootMargin: '-100px 0px -50% 0px' }) : null;
+if (observer) document.querySelectorAll('.card[id]').forEach(c => observer.observe(c));
+</script>
+
+</body>
+</html>

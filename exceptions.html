@@ -1,0 +1,2823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PART 5: Exception Handling (Q151–175) — Java Interview Guide</title>
+
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #a855f7;
+    --green: #22c55e;
+    --yellow: #fbbf24;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --code-bg: #0d1117;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* TOPNAV */
+  .topnav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    backdrop-filter: blur(10px);
+    overflow-x: auto;
+  }
+  .topnav::-webkit-scrollbar { display: none; }
+  .nav-logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--accent);
+    margin-right: 32px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-link {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    white-space: nowrap;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .nav-link:hover { color: var(--text); background: var(--surface2); }
+  .nav-link.active { color: #000; }
+
+  /* HEADER */
+  header {
+    padding: 48px 40px 32px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, #0a0e1a 0%, #0f1729 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    opacity: 0.8;
+  }
+  h1 {
+    font-size: clamp(24px, 4vw, 48px);
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+  .subtitle { color: var(--muted); font-size: 15px; max-width: 500px; }
+  .stats-row { display: flex; gap: 20px; margin-top: 24px; flex-wrap: wrap; }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+  }
+  .stat-num { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent); }
+
+  /* CONTROLS */
+  .controls {
+    padding: 16px 40px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    position: sticky;
+    top: 52px;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+  .search-wrap { position: relative; flex: 1; min-width: 180px; max-width: 360px; }
+  .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+  input[type="text"] {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px 8px 34px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type="text"]:focus { border-color: var(--accent); }
+  input[type="text"]::placeholder { color: var(--muted); }
+  .filter-btn {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 13px;
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #000; }
+  .expand-all {
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 13px;
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .expand-all:hover { border-color: var(--accent3); color: var(--accent3); }
+
+  /* LAYOUT */
+  .main { display: flex; }
+  .sidebar {
+    width: 240px;
+    min-width: 240px;
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    position: sticky;
+    top: calc(52px + 56px);
+    height: calc(100vh - 108px);
+    overflow-y: auto;
+    background: var(--surface);
+  }
+  .sidebar::-webkit-scrollbar { width: 3px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .cat-header {
+    padding: 6px 16px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px 6px 24px;
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+    font-weight: 500;
+  }
+  .sidebar-link:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+  .sidebar-link.active { color: var(--accent); border-left-color: var(--accent); background: rgba(0,212,255,0.05); }
+
+  /* CONTENT */
+  .content { flex: 1; padding: 24px 32px; min-width: 0; }
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 24px 0 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: #2a3f60; }
+  .card.open { border-color: #2a4a70; }
+  .card.highlighted { border-color: var(--accent); }
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+  }
+  .card-header:hover { background: var(--surface2); }
+  .q-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    min-width: 28px;
+    font-weight: 600;
+  }
+  .q-title { flex: 1; font-size: 14px; font-weight: 600; }
+  .difficulty {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 3px 7px;
+    border-radius: 4px;
+  }
+  .diff-basic { background: rgba(34,197,94,0.15); color: #22c55e; }
+  .diff-mid { background: rgba(251,191,36,0.15); color: #fbbf24; }
+  .diff-adv { background: rgba(255,107,53,0.15); color: #ff6b35; }
+  .diff-exp { background: rgba(168,85,247,0.15); color: #a855f7; }
+  .chevron { color: var(--muted); transition: transform 0.3s; flex-shrink: 0; }
+  .card.open .chevron { transform: rotate(180deg); }
+  .card-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+  .card.open .card-body { max-height: 9999px; }
+  .card-inner { border-top: 1px solid var(--border); padding: 20px; }
+  .answer p { margin-bottom: 12px; line-height: 1.7; font-size: 14px; }
+  .answer strong { color: #fff; }
+  .answer em { color: var(--accent); font-style: normal; font-weight: 600; }
+  .answer code {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #7dd3fc;
+  }
+  .answer pre {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 12px;
+    line-height: 1.6;
+    overflow-x: auto;
+    margin: 12px 0;
+    color: #e2e8f0;
+    white-space: pre;
+  }
+  .answer table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 13px;
+  }
+  .answer th, .answer td {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+  .answer th { background: var(--surface2); color: var(--accent); font-weight: 700; font-size: 11px; letter-spacing: 0.5px; }
+  .answer tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+  .answer ul, .answer ol { padding-left: 20px; margin: 8px 0 12px; }
+  .answer li { margin-bottom: 6px; line-height: 1.6; font-size: 14px; }
+  .answer h4 { color: var(--accent2); font-size: 13px; margin: 12px 0 6px; }
+  .tip-box {
+    background: rgba(34,197,94,0.08);
+    border: 1px solid rgba(34,197,94,0.2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    margin: 12px 0;
+    line-height: 1.6;
+  }
+  .warn-box {
+    background: rgba(251,191,36,0.08);
+    border: 1px solid rgba(251,191,36,0.2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    margin: 12px 0;
+    line-height: 1.6;
+  }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .tag {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 9px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  /* INDEX PAGE */
+  .index-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .part-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: block;
+    position: relative;
+    overflow: hidden;
+  }
+  .part-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--card-color);
+  }
+  .part-card:hover { border-color: #2a3f60; transform: translateY(-2px); }
+  .part-icon { font-size: 32px; margin-bottom: 14px; }
+  .part-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .part-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+  .part-desc { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+  .part-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--card-color);
+  }
+  .index-hero {
+    padding: 60px 40px 40px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, #0a0e1a 0%, #0f1729 100%);
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+  .index-hero::before {
+    content: '';
+    position: absolute;
+    top: -100px; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 400px;
+    background: radial-gradient(circle, rgba(0,212,255,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0.8;
+  }
+  .hero-title {
+    font-size: clamp(32px, 6vw, 64px);
+    font-weight: 800;
+    line-height: 1.05;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+  .hero-sub { color: var(--muted); font-size: 16px; max-width: 560px; margin: 0 auto 28px; }
+  .hero-stats { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+  .hero-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 20px;
+    text-align: center;
+  }
+  .hero-stat-num { font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 700; color: var(--accent); }
+  .hero-stat-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* BREADCRUMB */
+  .breadcrumb {
+    padding: 12px 40px;
+    font-size: 12px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .breadcrumb a { color: var(--accent); }
+  .breadcrumb a:hover { text-decoration: underline; }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .topnav { padding: 0 16px; }
+    header, .controls { padding-left: 16px; padding-right: 16px; }
+    .content { padding: 16px; }
+    .index-grid { padding: 20px; grid-template-columns: 1fr; }
+    .index-hero { padding: 40px 20px; }
+    .breadcrumb { padding: 10px 16px; }
+  }
+</style>
+
+</head>
+<body>
+<nav class="topnav"><span class="nav-logo">// Java Interview</span><div class="nav-links"><a href="index.html" class="nav-link">🏠 Home</a><a href="basics.html" class="nav-link">☕ Basics</a><a href="versions.html" class="nav-link">🚀 Versions</a><a href="oop.html" class="nav-link">🧩 OOP</a><a href="collections.html" class="nav-link">📦 Collections</a><a href="exceptions.html" class="nav-link active" style="background:var(--accent);color:#000;">⚠️ Exceptions</a><a href="concurrency.html" class="nav-link">⚡ Concurrency</a><a href="advanced-concurrency.html" class="nav-link">🔬 Advanced</a></div></nav>
+<div class="breadcrumb">
+  <a href="index.html">Home</a> › PART 5: Exception Handling (Q151–175)
+</div>
+<header>
+  <div class="header-tag">// Java Interview — Senior Level</div>
+  <h1>⚠️ PART 5: Exception Handling (Q151–175)</h1>
+  <p class="subtitle">Exception hierarchy, checked vs unchecked, try-with-resources, custom exceptions, best practices.</p>
+  <div class="stats-row">
+    <div class="stat"><span class="stat-num">58</span> Questions</div>
+    
+    <div class='stat'><span class='stat-num'>10</span> Mid</div>
+    <div class='stat'><span class='stat-num'>43</span> Advanced</div>
+    <div class='stat'><span class='stat-num'>5</span> Expert</div>
+  </div>
+</header>
+<div class="controls">
+  <div class="search-wrap">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="searchInput" placeholder="Search questions..." oninput="filterCards()">
+  </div>
+  <button class="filter-btn active" onclick="filterBy('all',this)">All</button>
+  
+  <button class='filter-btn' onclick='filterBy("mid",this)'>Mid</button>
+  <button class='filter-btn' onclick='filterBy("adv",this)'>Advanced</button>
+  <button class='filter-btn' onclick='filterBy("exp",this)'>Expert</button>
+  <button class="expand-all" onclick="toggleAll()">Expand All</button>
+</div>
+<div class="main">
+  <aside class="sidebar">
+    <div class="cat-header">Questions</div>
+    <div class="sidebar-link" data-target="q151" onclick="scrollToCard('q151')">Q151. . Checked vs unchecked exceptions?</div>
+<div class="sidebar-link" data-target="q154" onclick="scrollToCard('q154')">Q154. . Custom exception?</div>
+<div class="sidebar-link" data-target="q157" onclick="scrollToCard('q157')">Q157. . What is stack trace?</div>
+<div class="sidebar-link" data-target="q160" onclick="scrollToCard('q160')">Q160. . Suppressed exceptions?</div>
+<div class="sidebar-link" data-target="q163" onclick="scrollToCard('q163')">Q163. . AutoCloseable vs Closeable?</div>
+<div class="sidebar-link" data-target="q166" onclick="scrollToCard('q166')">Q166. . Re-throwing exceptions?</div>
+<div class="sidebar-link" data-target="q169" onclick="scrollToCard('q169')">Q169. . Performance impact of exceptions?</div>
+<div class="sidebar-link" data-target="q172" onclick="scrollToCard('q172')">Q172. . Custom checked exceptions – pros/cons?</div>
+<div class="sidebar-link" data-target="q175" onclick="scrollToCard('q175')">Q175. . Exception best practices in Spring?</div>
+<div class="sidebar-link" data-target="q270" onclick="scrollToCard('q270')">Q270. . Dependency injection types?</div>
+<div class="sidebar-link" data-target="q273" onclick="scrollToCard('q273')">Q273. . Externalized configuration?</div>
+<div class="sidebar-link" data-target="q276" onclick="scrollToCard('q276')">Q276. . Health checks?</div>
+<div class="sidebar-link" data-target="q279" onclick="scrollToCard('q279')">Q279. . Exception handling in REST?</div>
+<div class="sidebar-link" data-target="q282" onclick="scrollToCard('q282')">Q282. . Spring Data JPA basics?</div>
+<div class="sidebar-link" data-target="q285" onclick="scrollToCard('q285')">Q285. . @Transactional pitfalls?</div>
+<div class="sidebar-link" data-target="q288" onclick="scrollToCard('q288')">Q288. . Paging and sorting?</div>
+<div class="sidebar-link" data-target="q291" onclick="scrollToCard('q291')">Q291. . Security basics?</div>
+<div class="sidebar-link" data-target="q294" onclick="scrollToCard('q294')">Q294. . Caching in Spring?</div>
+<div class="sidebar-link" data-target="q297" onclick="scrollToCard('q297')">Q297. . Spring Cloud overview?</div>
+<div class="sidebar-link" data-target="q300" onclick="scrollToCard('q300')">Q300. . Production readiness checklist?</div>
+
+  </aside>
+  <div class="content">
+    
+    <div class="card" id="q151">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">151</span>
+        <span class="q-title">. Checked vs unchecked exceptions?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><strong>Checked exceptions</strong> (must be caught or declared with <code>throws</code>):</p>
+<ul>
+<li>Extends <code>Exception</code> but NOT <code>RuntimeException</code></li>
+<li>Represent recoverable, expected conditions</li>
+<li>Examples: <code>IOException</code>, <code>SQLException</code>, <code>ClassNotFoundException</code></li>
+</ul>
+<pre>public void readFile(String path) throws IOException { // must declare
+    Files.readAllBytes(Path.of(path));
+}</pre>
+<p><strong>Unchecked exceptions</strong> (RuntimeException subclasses):</p>
+<ul>
+<li>No requirement to catch or declare</li>
+<li>Represent programming errors or unrecoverable situations</li>
+<li>Examples: <code>NullPointerException</code>, <code>IllegalArgumentException</code>, <code>ArrayIndexOutOfBoundsException</code></li>
+</ul>
+<p><strong>Controversy</strong>: Checked exceptions are unique to Java. Many argue they clutter APIs and encourage <code>catch (Exception e) {}</code> anti-patterns. Spring and most modern libraries convert checked to unchecked. Kotlin and C# don't have checked exceptions.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q152">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">152</span>
+        <span class="q-title">. Error vs Exception?</span>
+        <span class="difficulty diff-exp">EXPERT</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <pre>Throwable
+├── Error          (serious JVM/system problems, don&#x27;t catch)
+│   ├── OutOfMemoryError
+│   ├── StackOverflowError
+│   ├── VirtualMachineError
+│   └── AssertionError
+└── Exception      (application-level problems)
+    ├── IOException (checked)
+    ├── SQLException (checked)
+    └── RuntimeException (unchecked)
+        ├── NullPointerException
+        ├── IllegalArgumentException
+        └── ...</pre>
+<p><strong>Errors</strong>: Abnormal conditions in JVM itself. Not caused by application code. Recovery is impossible or impractical. <strong>Don't catch Errors</strong> (except in very specific frameworks like test runners catching AssertionError).</p>
+<p><strong>Exceptions</strong>: Problems in application logic. Checked = expected, recoverable. Unchecked = programming errors, typically unrecoverable in context.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q153">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">153</span>
+        <span class="q-title">. Why RuntimeException exists?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>RuntimeException provides a category for <strong>programming errors</strong> that:</p>
+<ol>
+<li>Can occur at any point in code</li>
+<li>Would be impractical to declare on every method</li>
+<li>Typically indicate bugs rather than external conditions</li>
+</ol>
+<p>If all runtime errors were checked:</p>
+<ul>
+<li><code>NullPointerException</code> would have to be declared on every method that uses an object reference</li>
+<li><code>ClassCastException</code> on every cast</li>
+<li>This would make Java code completely unmanageable</li>
+</ul>
+<p>RuntimeException says: "This is the caller's fault for misusing the API. Handle it at a high level or let the application fail."</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q154">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">154</span>
+        <span class="q-title">. Custom exception?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <pre>// Custom checked exception
+public class UserNotFoundException extends Exception {
+    private final Long userId;
+    
+    public UserNotFoundException(Long userId) {
+        super(&quot;User not found with ID: &quot; + userId);
+        this.userId = userId;
+    }
+    
+    // Exception chaining
+    public UserNotFoundException(Long userId, Throwable cause) {
+        super(&quot;User not found with ID: &quot; + userId, cause);
+        this.userId = userId;
+    }
+    
+    public Long getUserId() { return userId; }
+}
+
+// Custom unchecked exception
+public class InsufficientFundsException extends RuntimeException {
+    private final BigDecimal required;
+    private final BigDecimal available;
+    
+    public InsufficientFundsException(BigDecimal required, BigDecimal available) {
+        super(String.format(&quot;Required: %s, Available: %s&quot;, required, available));
+        this.required = required;
+        this.available = available;
+    }
+}</pre>
+<p><strong>Best practices</strong>:</p>
+<ul>
+<li>Provide constructors with message and cause (for chaining)</li>
+<li>Add relevant context fields</li>
+<li>Make unchecked unless caller can meaningfully recover</li>
+<li>Declare <code>serialVersionUID</code> for serializable exceptions</li>
+</ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q155">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">155</span>
+        <span class="q-title">. Best practices for exception handling?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <ol>
+<li><strong>Be specific</strong>: Catch specific exceptions, not <code>Exception</code> or <code>Throwable</code></li>
+<li><strong>Don't swallow</strong>: Never <code>catch (Exception e) {}</code> – at minimum log the exception</li>
+<li><strong>Preserve cause</strong>: Always use exception chaining when wrapping: <code>new ServiceException(&quot;msg&quot;, originalException)</code></li>
+<li><strong>Fail fast</strong>: Throw early when preconditions fail (IllegalArgumentException, NullPointerException)</li>
+<li><strong>Document with @throws</strong>: In Javadoc, document what exceptions and when</li>
+<li><strong>Don't use exceptions for control flow</strong>: <code>try { parse() } catch (NumberFormatException)</code> as normal flow is bad</li>
+<li><strong>Clean up in finally/try-with-resources</strong>: Don't rely on exception path to close resources</li>
+<li><strong>Log once</strong>: Log at the point of handling, not at every re-throw</li>
+<li><strong>Don't catch what you can't handle</strong>: Let it propagate to a level that can handle it</li>
+<li><strong>RuntimeException for API misuse</strong>: IllegalArgument, IllegalState, NullPointer for programming errors</li>
+</ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q156">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">156</span>
+        <span class="q-title">. Exception propagation?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Exceptions propagate up the <strong>call stack</strong> until caught or the program terminates.</p>
+<pre>main() → serviceMethod() → daoMethod() → throws IOException
+         ↑ propagates
+serviceMethod() → if not caught, propagates to main()
+main() → if not caught, JVM prints stack trace and exits</pre>
+<p><strong>Checked exceptions</strong>: Must be caught or declared at each level in the call stack.</p>
+<p><strong>Unchecked</strong>: Propagate automatically without declaration.</p>
+<pre>void dao() throws IOException { throw new IOException(&quot;DB Error&quot;); }
+void service() throws IOException { dao(); } // propagates
+void controller() {
+    try { service(); }
+    catch (IOException e) { throw new ServiceException(&quot;Failed&quot;, e); } // wrap and re-throw
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q157">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">157</span>
+        <span class="q-title">. What is stack trace?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>A stack trace is a <strong>snapshot of the call stack</strong> at the moment an exception was thrown:</p>
+<pre>java.lang.NullPointerException: Cannot invoke &quot;String.length()&quot; because &quot;str&quot; is null
+    at com.example.UserService.processName(UserService.java:45)
+    at com.example.UserController.handleRequest(UserController.java:23)
+    at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+    at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:897)
+    ...</pre>
+<p>Reading a stack trace:</p>
+<ul>
+<li><strong>First line</strong>: Exception type and message</li>
+<li><strong>Second line</strong>: Immediate location where exception was thrown</li>
+<li><strong>Subsequent lines</strong>: Call chain (most recent first)</li>
+</ul>
+<p>Java 14+ <strong>Helpful NullPointerExceptions</strong>: JVM can tell you exactly which part of an expression was null.</p>
+<p><strong>Performance</strong>: <code>new Exception()</code> captures stack trace (expensive). <code>new RuntimeException(message, cause, false, false)</code> disables stack trace collection (use in high-performance exception factories).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q158">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">158</span>
+        <span class="q-title">. finally block behavior?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><code>finally</code> block <strong>always executes</strong> after try/catch, regardless of:</p>
+<ul>
+<li>Normal completion</li>
+<li>Exception thrown (caught or not)</li>
+<li><code>return</code> or <code>break</code> in try block</li>
+</ul>
+<pre>int test() {
+    try {
+        return 1;
+    } finally {
+        System.out.println(&quot;finally runs&quot;); // prints before return
+        // return 2; // DON&#x27;T: this swallows the original return/exception
+    }
+}</pre>
+<p><strong>Exceptions</strong>: <code>System.exit()</code>, JVM crash, thread kill – finally may NOT run.</p>
+<p><strong>try-with-resources</strong> is preferred over finally for resource cleanup (simpler, handles suppressed exceptions better).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q159">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">159</span>
+        <span class="q-title">. Return in try/finally?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>If both <code>try</code> and <code>finally</code> have <code>return</code>:</p>
+<pre>String test() {
+    try {
+        return &quot;try&quot;; // scheduled
+    } finally {
+        return &quot;finally&quot;; // overrides! &quot;try&quot; return is LOST
+    }
+}
+test(); // returns &quot;finally&quot;</pre>
+<p>Similarly, if <code>finally</code> throws an exception, it overrides the try-block exception (original is lost unless captured and attached as suppressed).</p>
+<p><strong>Best practice</strong>: Never put <code>return</code> or <code>throw</code> in <code>finally</code>. It masks exceptions and makes code hard to reason about.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q160">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">160</span>
+        <span class="q-title">. Suppressed exceptions?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>In try-with-resources, if both body and <code>close()</code> throw exceptions, the <code>close()</code> exception is <strong>suppressed</strong> and attached to the primary exception:</p>
+<pre>try (Resource r = new Resource()) {
+    throw new RuntimeException(&quot;body exception&quot;);
+    // r.close() also throws: &quot;close exception&quot;
+}
+// Caught: RuntimeException(&quot;body exception&quot;)
+// exception.getSuppressed()[0] = RuntimeException(&quot;close exception&quot;)</pre>
+<p>Manual suppression:</p>
+<pre>Throwable primary = null;
+try {
+    doWork();
+} catch (Throwable t) {
+    primary = t;
+} finally {
+    try { close(); }
+    catch (Throwable t2) {
+        if (primary != null) primary.addSuppressed(t2);
+        else throw t2;
+    }
+}
+if (primary != null) throw primary;</pre>
+<p>try-with-resources handles this automatically – that's one reason to prefer it.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q161">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">161</span>
+        <span class="q-title">. What is Exception chaining?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Exception chaining preserves the <strong>original cause</strong> when wrapping exceptions:</p>
+<pre>try {
+    statement.executeQuery(sql);
+} catch (SQLException e) {
+    // Wrap with context, preserve cause
+    throw new DataAccessException(&quot;Failed to fetch users&quot;, e);
+}</pre>
+<p>Access the chain:</p>
+<pre>catch (DataAccessException e) {
+    Throwable cause = e.getCause(); // original SQLException
+    cause.getCause(); // could be deeper chain
+}</pre>
+<p>Constructors for chaining: <code>Exception(String message, Throwable cause)</code>.</p>
+<p><strong>Why it matters</strong>: Without chaining, the original stack trace is lost. With chaining, you can trace the full execution path from root cause to high-level error.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q162">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">162</span>
+        <span class="q-title">. try-with-resources internals?</span>
+        <span class="difficulty diff-exp">EXPERT</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Compiles to bytecode roughly equivalent to:</p>
+<pre>// try (Resource r = acquire()) { body }
+Resource r = acquire();
+Throwable primaryException = null;
+try {
+    body;
+} catch (Throwable t) {
+    primaryException = t;
+    throw t;
+} finally {
+    if (r != null) {
+        if (primaryException != null) {
+            try { r.close(); }
+            catch (Throwable t) { primaryException.addSuppressed(t); }
+        } else {
+            r.close();
+        }
+    }
+}</pre>
+<p>The key difference from manual try-finally:</p>
+<ol>
+<li>Close exceptions are suppressed (not swallowed, not masking primary)</li>
+<li>Resource is guaranteed closed</li>
+<li>Works with multiple resources (closed in reverse order)</li>
+</ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q163">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">163</span>
+        <span class="q-title">. AutoCloseable vs Closeable?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <table>
+<tr><th></th><th><code>Closeable</code></th><th><code>AutoCloseable</code></th></tr>
+<tr><td>Introduced</td><td>Java 5</td><td>Java 7</td></tr>
+<tr><td>Extends</td><td>-</td><td>-</td></tr>
+<tr><td><code>Closeable</code> extends</td><td><code>AutoCloseable</code></td><td>-</td></tr>
+<tr><td><code>close()</code> throws</td><td><code>IOException</code></td><td><code>Exception</code></td></tr>
+<tr><td>Multiple closes</td><td>Should be idempotent</td><td>Not required</td></tr>
+<tr><td>Use in TWR</td><td>Yes</td><td>Yes</td></tr>
+</table>
+<p><code>Closeable</code> is for I/O resources (specifically throws <code>IOException</code>).</p>
+<p><code>AutoCloseable</code> is more general (throws <code>Exception</code>).</p>
+<p>All <code>java.io</code> classes implement <code>Closeable</code>, which extends <code>AutoCloseable</code>, so all work with try-with-resources.</p>
+<p>For custom resources: implement <code>AutoCloseable</code> (or <code>Closeable</code> for I/O). Make <code>close()</code> idempotent when possible (safe to call multiple times).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q164">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">164</span>
+        <span class="q-title">. When not to catch exception?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <ol>
+<li><strong>You can't handle it meaningfully</strong>: Don't catch just to re-throw the same exception</li>
+<li><strong>Let framework handle it</strong>: Spring's <code>@ExceptionHandler</code>, JAX-RS exception mappers</li>
+<li><strong>Test code</strong>: Don't catch in tests – let JUnit/TestNG report failures</li>
+<li><strong>Logging noise</strong>: Don't catch, log, and re-throw – log once at the handling point</li>
+<li><strong>Checked exceptions in streams/lambdas</strong>: Wrapping is cumbersome; often let it propagate</li>
+</ol>
+<p><strong>Anti-pattern</strong>:</p>
+<pre>try {
+    return service.process(request);
+} catch (Exception e) {
+    log.error(&quot;Error&quot;, e);
+    throw e; // re-throwing - logger should be at higher level
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q165">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">165</span>
+        <span class="q-title">. Logging exceptions correctly?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <pre>// CORRECT: Log with exception (full stack trace)
+log.error(&quot;Failed to process order {}&quot;, orderId, exception);
+
+// WRONG: Only log message (no stack trace)
+log.error(&quot;Failed to process order {}: {}&quot;, orderId, exception.getMessage());
+
+// WRONG: System.out.println
+System.out.println(&quot;Error: &quot; + exception); // no proper logging
+
+// WRONG: Log and throw (duplicate logs up the chain)
+log.error(&quot;Error&quot;, e);
+throw new ServiceException(&quot;Error&quot;, e); // caller will log too</pre>
+<p><strong>Structured logging</strong>:</p>
+<pre>log.error(&quot;Failed to process order&quot;, 
+    kv(&quot;orderId&quot;, orderId), 
+    kv(&quot;userId&quot;, userId),
+    exception);</pre>
+<p><strong>Log once</strong>: Log at the point of final handling, not at every intermediate catch-and-rethrow.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q166">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">166</span>
+        <span class="q-title">. Re-throwing exceptions?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <pre>// Rethrow same exception (no wrapping)
+try { ... }
+catch (IOException e) { 
+    cleanup();
+    throw e; // same exception, original stack trace preserved
+}
+
+// Wrap (exception translation)
+try { ... }
+catch (SQLException e) {
+    throw new DataAccessException(&quot;DB error&quot;, e); // wrapped with cause
+}
+
+// Java 7 precise rethrow
+try { mightThrowChecked(); }
+catch (Exception e) {
+    // compiler knows only declared checked exceptions can reach here
+    throw e; // no need to declare Exception on method, only declared checked types
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q167">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">167</span>
+        <span class="q-title">. Exception handling in lambdas?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Lambdas are tricky with checked exceptions – functional interfaces don't declare <code>throws</code>:</p>
+<pre>// Compile error: Function doesn&#x27;t declare throws IOException
+Function&lt;String, String&gt; fn = path -&gt; Files.readString(Path.of(path));
+
+// Option 1: Wrap in unchecked
+Function&lt;String, String&gt; fn = path -&gt; {
+    try { return Files.readString(Path.of(path)); }
+    catch (IOException e) { throw new UncheckedIOException(e); }
+};
+
+// Option 2: Helper method that wraps checked
+@FunctionalInterface
+interface CheckedFunction&lt;T, R&gt; { R apply(T t) throws Exception; }
+static &lt;T, R&gt; Function&lt;T, R&gt; wrap(CheckedFunction&lt;T, R&gt; fn) {
+    return t -&gt; { try { return fn.apply(t); } catch (Exception e) { throw new RuntimeException(e); } };
+}
+
+Function&lt;String, String&gt; fn = wrap(path -&gt; Files.readString(Path.of(path)));</pre>
+<p>Libraries like Lombok (<code>@SneakyThrows</code>), Vavr, and others provide utilities for this.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q168">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">168</span>
+        <span class="q-title">. Global exception handling?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><strong>In Spring Boot REST</strong>:</p>
+<pre>@RestControllerAdvice
+public class GlobalExceptionHandler {
+    
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleNotFound(UserNotFoundException e) {
+        return new ErrorResponse(&quot;USER_NOT_FOUND&quot;, e.getMessage());
+    }
+    
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleValidation(ConstraintViolationException e) {
+        return new ErrorResponse(&quot;VALIDATION_ERROR&quot;, buildViolationMessage(e));
+    }
+    
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleGeneral(Exception e, HttpServletRequest request) {
+        log.error(&quot;Unhandled exception for {}&quot;, request.getRequestURI(), e);
+        return new ErrorResponse(&quot;INTERNAL_ERROR&quot;, &quot;An unexpected error occurred&quot;);
+    }
+}</pre>
+<p><strong>Thread.UncaughtExceptionHandler</strong>:</p>
+<pre>Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -&gt; {
+    log.error(&quot;Uncaught exception in thread {}&quot;, thread.getName(), throwable);
+    // alerting, metrics, etc.
+});</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q169">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">169</span>
+        <span class="q-title">. Performance impact of exceptions?</span>
+        <span class="difficulty diff-exp">EXPERT</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Exceptions are expensive:</p>
+<ol>
+<li><strong>Stack trace capture</strong> (<code>fillInStackTrace()</code>): Walks the JVM stack, creates StackTraceElement objects. O(depth) cost.</li>
+<li><strong>Object creation</strong>: <code>new Exception()</code> involves heap allocation + GC pressure</li>
+<li><strong>JIT deoptimization</strong>: Paths with exception handling may be compiled less aggressively</li>
+</ol>
+<p><strong>Benchmarks</strong>: A thrown/caught exception is ~100-1000x slower than a normal return, depending on stack depth.</p>
+<p><strong>Best practices</strong>:</p>
+<ol>
+<li><strong>Don't use exceptions for control flow</strong> (e.g., use <code>Optional</code> instead of catching NPE)</li>
+<li><strong>Pre-validate</strong>: Check <code>isPresent()</code> before <code>get()</code> rather than catching <code>NoSuchElementException</code></li>
+<li><strong>Expensive in tight loops</strong>: <code>Integer.parseInt()</code> + catch is slow; use <code>NumberUtils.isNumeric()</code> first</li>
+<li><strong>Disable stack trace</strong>: For exceptions used as signals (not bugs), override <code>fillInStackTrace()</code>:</li>
+</ol>
+<pre>class FastException extends RuntimeException {
+    @Override public synchronized Throwable fillInStackTrace() { return this; }
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q170">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">170</span>
+        <span class="q-title">. When to use assertions?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><code>assert condition : &quot;message&quot;;</code> – throws <code>AssertionError</code> if condition is false (when assertions enabled with <code>-ea</code>).</p>
+<p><strong>Appropriate uses</strong>:</p>
+<ul>
+<li><strong>Internal invariants</strong>: Pre-conditions for private methods (you control callers)</li>
+<li><strong>Post-conditions</strong>: Verify result after complex computation</li>
+<li><strong>Unreachable code</strong>: <code>default: assert false : &quot;Unknown state: &quot; + state;</code></li>
+<li><strong>Class/loop invariants</strong></li>
+</ul>
+<p><strong>NOT appropriate</strong>:</p>
+<ul>
+<li>Public method parameter validation (use <code>IllegalArgumentException</code>)</li>
+<li>Business logic checks (use exceptions)</li>
+<li>Production code where assertions are disabled (default)</li>
+</ul>
+<p>Assertions are disabled by default in production JVMs. Use <code>IllegalArgumentException</code>/<code>IllegalStateException</code> for code-correctness checks that should always run.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q171">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">171</span>
+        <span class="q-title">. Assertion vs exception?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <table>
+<tr><th></th><th>Assertion</th><th>Exception</th></tr>
+<tr><td>Use</td><td>Programmer errors, invariants</td><td>Expected/unexpected runtime conditions</td></tr>
+<tr><td>Default</td><td>Disabled in production</td><td>Always active</td></tr>
+<tr><td>Type</td><td>AssertionError (Error)</td><td>Exception subclass</td></tr>
+<tr><td>Public API</td><td>No (use IAE)</td><td>Yes</td></tr>
+<tr><td>Recovery</td><td>No (programming bug)</td><td>Yes (if checked)</td></tr>
+</table>
+<p>Rule of thumb: <strong>Assertions document invariants for developers. Exceptions handle conditions for callers.</strong></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q172">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">172</span>
+        <span class="q-title">. Custom checked exceptions – pros/cons?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><strong>Pros</strong>:</p>
+<ul>
+<li>Compiler forces callers to handle/declare</li>
+<li>Self-documenting API: method signature shows failure modes</li>
+<li>Forces recovery strategy consideration</li>
+<li>Type-safe error handling</li>
+</ul>
+<p><strong>Cons</strong>:</p>
+<ul>
+<li>Clutters method signatures (<code>throws A, B, C, D</code>)</li>
+<li>Callers often swallow them: <code>catch (Exception e) { }</code></li>
+<li>Breaks with lambdas/streams</li>
+<li>Spreads checked exception declarations through layers</li>
+<li>Controversy: C#, Kotlin, Scala, modern Java frameworks avoid them</li>
+</ul>
+<p><strong>Senior take</strong>: Use checked exceptions sparingly. If the caller can genuinely do something different for this exception (retry, fallback, user message), it might warrant checked. Otherwise, unchecked is cleaner. Spring's philosophy: convert all infrastructure exceptions (JDBC, JMS) to unchecked (DataAccessException hierarchy).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q173">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">173</span>
+        <span class="q-title">. Exception translation?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Converting low-level/infrastructure exceptions to higher-level/domain exceptions:</p>
+<pre>// DAO layer
+try {
+    return jdbcTemplate.queryForObject(sql, params, User.class);
+} catch (EmptyResultDataAccessException e) {
+    throw new UserNotFoundException(id); // translate to domain exception
+} catch (DataAccessException e) {
+    throw new DataStoreException(&quot;Failed to fetch user &quot; + id, e); // translate
+}</pre>
+<p>Why:</p>
+<ol>
+<li><strong>Abstraction</strong>: Callers shouldn't need to know you use JDBC/JPA</li>
+<li><strong>Encapsulation</strong>: Implementation details (SQL errors) don't leak</li>
+<li><strong>Layer responsibility</strong>: DAL translates DB errors; service layer translates to business errors</li>
+<li><strong>Testability</strong>: Can test service with mock that throws domain exceptions</li>
+</ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q174">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">174</span>
+        <span class="q-title">. API design and exceptions?</span>
+        <span class="difficulty diff-exp">EXPERT</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <ol>
+<li><strong>Checked for expected failures</strong>: <code>findUser()</code> → <code>throws UserNotFoundException</code> if not finding is a normal case callers must handle</li>
+<li><strong>Unchecked for programming errors</strong>: <code>setAge(-1)</code> → <code>throw new IllegalArgumentException(&quot;Age must be non-negative&quot;)</code></li>
+<li><strong>Document what you throw</strong>: Javadoc <code>@throws</code></li>
+<li><strong>Consistent naming</strong>: <code>XxxException</code> for checked, <code>XxxException extends RuntimeException</code> for unchecked, or just clear naming</li>
+<li><strong>Don't throw from constructors</strong> (leaking partially constructed objects) unless unavoidable</li>
+<li><strong>Don't throw from finalizers</strong></li>
+<li><strong>Prefer Optional over checked exception</strong> for "not found" scenarios in functional contexts</li>
+<li><strong>Consider http-status-friendly exceptions</strong> for REST APIs</li>
+</ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q175">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">175</span>
+        <span class="q-title">. Exception best practices in Spring?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <ol>
+<li><strong>Use <code>@ControllerAdvice</code> / <code>@RestControllerAdvice</code></strong> for centralized exception handling</li>
+<li><strong>Transactional rollback</strong>: By default, Spring only rolls back on <code>RuntimeException</code> and <code>Error</code>. Use <code>@Transactional(rollbackFor = Exception.class)</code> to also rollback on checked exceptions</li>
+<li><strong>DataAccessException</strong>: Catch Spring's <code>DataAccessException</code> (unchecked) not raw <code>SQLException</code></li>
+<li><strong>Don't expose internal exceptions</strong> in REST responses (security risk + poor UX)</li>
+<li><strong>Consistent error response format</strong>: <code>{ &quot;error&quot;: &quot;USER_NOT_FOUND&quot;, &quot;message&quot;: &quot;...&quot;, &quot;timestamp&quot;: &quot;...&quot; }</code></li>
+<li><strong>Spring Boot's <code>ErrorController</code></strong>: Customize <code>/error</code> endpoint for HTML error pages</li>
+<li><strong>Validation exceptions</strong>: Handle <code>MethodArgumentNotValidException</code> for <code>@Valid</code> failures</li>
+<li><strong>Log with correlation ID</strong>: Include request ID in exception logs for traceability</li>
+<li><strong>Propagation in async</strong>: <code>@Async</code> methods lose exception context; use <code>AsyncUncaughtExceptionHandler</code></li>
+<li><strong>Circuit breaker</strong>: Use Resilience4j to handle repeated failures gracefully</li>
+</ol>
+<pre>// Getting context (rarely needed in Spring Boot apps)
+ApplicationContext ctx = SpringApplication.run(MyApp.class, args);
+UserService service = ctx.getBean(UserService.class);
+
+// In a bean, inject context
+@Component
+class MyComponent implements ApplicationContextAware {
+    private ApplicationContext context;
+    
+    @Override
+    public void setApplicationContext(ApplicationContext ctx) {
+        this.context = ctx;
+    }
+}</pre>
+<p>Hierarchy: Spring Boot creates a parent/child context. Parent context has non-web beans. Child (Web ApplicationContext) has web-specific beans (controllers, filters). Beans in parent visible to child but not vice versa.</p>
+<p><strong>Environment</strong>: ApplicationContext wraps Environment which holds properties, profiles, active environment.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q268">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">268</span>
+        <span class="q-title">. Bean lifecycle?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Complete bean lifecycle:</p>
+<pre>1. Instantiation (constructor called)
+2. Property injection (setter/field injection, @Autowired)
+3. BeanNameAware.setBeanName()
+4. BeanFactoryAware.setBeanFactory()
+5. ApplicationContextAware.setApplicationContext()
+6. BeanPostProcessor.postProcessBeforeInitialization() [all beans]
+7. @PostConstruct method
+8. InitializingBean.afterPropertiesSet()
+9. @Bean(initMethod = &quot;init&quot;) custom init method
+10. BeanPostProcessor.postProcessAfterInitialization() [all beans]
+   → Bean ready for use
+   ...
+11. @PreDestroy method
+12. DisposableBean.destroy()
+13. @Bean(destroyMethod = &quot;cleanup&quot;) custom destroy method</pre>
+<p><code>BeanPostProcessor</code> is the extension point used by Spring AOP (creates proxies), @Async, @Transactional, etc.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q269">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">269</span>
+        <span class="q-title">. @Bean vs @Component?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><strong><code>@Component</code></strong> (and specializations <code>@Service</code>, <code>@Repository</code>, <code>@Controller</code>):</p>
+<ul>
+<li>Class-level annotation</li>
+<li>Detected by component scanning</li>
+<li>Spring instantiates the class directly</li>
+<li>For your own classes</li>
+</ul>
+<p><strong><code>@Bean</code></strong>:</p>
+<ul>
+<li>Method-level annotation inside <code>@Configuration</code> class</li>
+<li>You write the instantiation code</li>
+<li>For third-party classes you can't annotate</li>
+<li>More control over construction</li>
+</ul>
+<pre>// @Component - Spring creates instance
+@Service
+public class UserService { ... }
+
+// @Bean - you create instance (for third-party)
+@Configuration
+public class AppConfig {
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return mapper;
+    }
+    
+    @Bean
+    public RestTemplate restTemplate(RestTemplateBuilder builder) {
+        return builder.setConnectTimeout(Duration.ofSeconds(5)).build();
+    }
+}</pre>
+<p><code>@Configuration</code> classes use <strong>CGLIB proxying</strong>: <code>@Bean</code> methods called directly return the same bean instance (singleton). Use <code>@Configuration(proxyBeanMethods = false)</code> for lighter-weight config when inter-bean method calls not needed.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q270">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">270</span>
+        <span class="q-title">. Dependency injection types?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><strong>Constructor injection</strong> (recommended):</p>
+<pre>@Service
+public class OrderService {
+    private final OrderRepository repo;
+    private final PaymentService payment;
+    
+    // @Autowired optional if single constructor (Spring 4.3+)
+    public OrderService(OrderRepository repo, PaymentService payment) {
+        this.repo = repo;
+        this.payment = payment;
+    }
+}</pre>
+<p><strong>Setter injection</strong>:</p>
+<pre>@Service
+public class OrderService {
+    private OrderRepository repo;
+    
+    @Autowired
+    public void setRepo(OrderRepository repo) { this.repo = repo; }
+}</pre>
+<p><strong>Field injection</strong> (least recommended):</p>
+<pre>@Service
+public class OrderService {
+    @Autowired private OrderRepository repo; // not testable without Spring context
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q271">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">271</span>
+        <span class="q-title">. @Autowired vs constructor injection?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><strong>Problems with <code>@Autowired</code> field injection</strong>:</p>
+<ol>
+<li><strong>Not testable</strong>: Can't inject mocks without Spring context or reflection; with constructor you can <code>new OrderService(mockRepo)</code></li>
+<li><strong>Hides dependencies</strong>: Looking at constructor tells you exactly what's needed</li>
+<li><strong>Allows circular dependencies</strong> (masks bad design); constructor injection fails fast</li>
+<li><strong>Can't make fields <code>final</code></strong>: Breaks immutability</li>
+<li><strong>Reflection-based</strong>: Slower, bypasses normal Java visibility</li>
+</ol>
+<p><strong>Constructor injection advantages</strong>:</p>
+<ul>
+<li>Fields can be <code>final</code> (immutable, fail-fast if null)</li>
+<li>Obvious dependencies (API contract)</li>
+<li>Works without Spring (testable in isolation)</li>
+<li>Forces small, focused classes (many constructor params = code smell)</li>
+<li>No circular dependencies unless you use <code>@Lazy</code></li>
+</ul>
+<p><strong>Official recommendation</strong>: Constructor injection is the Spring Team's preferred approach (since Spring 4.3).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q272">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">272</span>
+        <span class="q-title">. Profiles?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Profiles allow different beans/configurations for different environments:</p>
+<pre>@Configuration
+@Profile(&quot;prod&quot;)
+public class ProdConfig { ... }
+
+@Configuration
+@Profile(&quot;!prod&quot;) // not prod
+public class DevConfig { ... }
+
+@Bean
+@Profile({&quot;dev&quot;, &quot;test&quot;})
+public DataSource h2DataSource() { ... }
+
+@Bean
+@Profile(&quot;prod&quot;)
+public DataSource prodDataSource() { ... }</pre>
+<p>Activate profiles:</p>
+<pre># application.properties
+spring.profiles.active=prod
+
+# Command line
+java -jar app.jar --spring.profiles.active=prod
+
+# Environment variable
+SPRING_PROFILES_ACTIVE=prod
+
+# JVM property
+-Dspring.profiles.active=prod
+
+# Programmatic
+SpringApplication app = new SpringApplication(MyApp.class);
+app.setAdditionalProfiles(&quot;prod&quot;);</pre>
+<p>Profile-specific properties: <code>application-prod.yml</code>, <code>application-dev.yml</code>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q273">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">273</span>
+        <span class="q-title">. Externalized configuration?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Spring Boot loads properties from many sources in priority order (later overrides earlier):</p>
+<ol>
+<li>Default properties (<code>SpringApplication.setDefaultProperties</code>)</li>
+<li><code>@PropertySource</code> annotations</li>
+<li><code>application.properties</code> / <code>application.yml</code></li>
+<li>Profile-specific: <code>application-{profile}.properties</code></li>
+<li>OS environment variables</li>
+<li>Java system properties (<code>-D</code>)</li>
+<li>Command line arguments (<code>--property=value</code>) ← highest priority</li>
+</ol>
+<pre>// Injecting properties
+@Value(&quot;${app.name:MyApp}&quot;) // with default &quot;MyApp&quot;
+private String appName;
+
+// Typed configuration
+@ConfigurationProperties(prefix = &quot;app.mail&quot;)
+@Validated
+public class MailProperties {
+    @NotBlank private String host;
+    private int port = 25;
+    private boolean ssl;
+    // getters/setters
+}
+
+@SpringBootApplication
+@EnableConfigurationProperties(MailProperties.class)
+public class App { }</pre>
+<p>Spring Boot 2.4+: Config data API, <code>spring.config.import</code> to import from other files/vaults.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q274">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">274</span>
+        <span class="q-title">. application.yml vs properties?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Both configure the same properties:</p>
+<pre># application.properties
+spring.datasource.url=jdbc:mysql://localhost:3306/mydb
+spring.datasource.username=root
+server.port=8080</pre>
+<pre># application.yml
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/mydb
+    username: root
+server:
+  port: 8080</pre>
+<p><strong>YAML advantages</strong>:</p>
+<ul>
+<li>Less repetition of common prefixes</li>
+<li>Supports lists and maps more naturally</li>
+<li>Multiple profiles in one file using <code>---</code> document separator</li>
+<li>More readable for nested config</li>
+</ul>
+<pre># application.yml with multiple profiles
+spring:
+  profiles:
+    active: dev
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:h2:mem:testdb
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:mysql://prod-server:3306/mydb</pre>
+<p><strong>YAML caveat</strong>: YAML is sensitive to indentation. Properties is simpler and less error-prone.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q275">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">275</span>
+        <span class="q-title">. Actuator?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Spring Boot Actuator provides <strong>production-ready endpoints</strong> for monitoring and management:</p>
+<pre>&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;
+&lt;/dependency&gt;</pre>
+<p>Key endpoints (<code>/actuator/{id}</code>):</p>
+<ul>
+<li><code>/health</code>: Application health (UP/DOWN + component details)</li>
+<li><code>/info</code>: Application info (build, git commit, etc.)</li>
+<li><code>/metrics</code>: Micrometer metrics (JVM, HTTP, custom)</li>
+<li><code>/prometheus</code>: Prometheus-format metrics</li>
+<li><code>/env</code>: Environment properties (sanitized)</li>
+<li><code>/loggers</code>: View/change log levels at runtime</li>
+<li><code>/threaddump</code>: Current thread dump</li>
+<li><code>/heapdump</code>: Download heap dump</li>
+<li><code>/beans</code>: All Spring beans</li>
+<li><code>/mappings</code>: All URL mappings</li>
+<li><code>/auditevents</code>: Security audit events</li>
+<li><code>/refresh</code>: (Cloud) Reload config</li>
+</ul>
+<pre># Expose all endpoints (restrict in production!)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q276">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">276</span>
+        <span class="q-title">. Health checks?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><code>/actuator/health</code> aggregates health indicators:</p>
+<p>Built-in indicators: DB, Redis, Kafka, Rabbit, Disk space, Elasticsearch, Mail, etc.</p>
+<pre>// Custom health indicator
+@Component
+public class ExternalApiHealthIndicator implements HealthIndicator {
+    
+    @Override
+    public Health health() {
+        try {
+            ResponseEntity&lt;String&gt; response = restTemplate.getForEntity(apiUrl, String.class);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                return Health.up()
+                    .withDetail(&quot;url&quot;, apiUrl)
+                    .withDetail(&quot;responseTime&quot;, responseTime)
+                    .build();
+            }
+            return Health.down().withDetail(&quot;status&quot;, response.getStatusCode()).build();
+        } catch (Exception e) {
+            return Health.down(e).build();
+        }
+    }
+}</pre>
+<p>Kubernetes integration:</p>
+<pre>management:
+  endpoint:
+    health:
+      probes:
+        enabled: true  # enables /actuator/health/liveness and /actuator/health/readiness</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q277">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">277</span>
+        <span class="q-title">. Spring Boot logging?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Default: <strong>Logback</strong> with SLF4J facade.</p>
+<pre>// SLF4J (facade - don&#x27;t import Logback directly)
+private static final Logger log = LoggerFactory.getLogger(UserService.class);
+// Or with Lombok:
+@Slf4j
+public class UserService { }
+
+log.debug(&quot;Processing user {}&quot;, userId);
+log.info(&quot;User {} created&quot;, userId);
+log.warn(&quot;Slow DB query: {}ms&quot;, elapsed);
+log.error(&quot;Failed to process user {}&quot;, userId, exception);</pre>
+<p>Configuration in <code>application.yml</code>:</p>
+<pre>logging:
+  level:
+    root: INFO
+    com.example: DEBUG
+    org.hibernate.SQL: DEBUG       # log SQL
+    org.hibernate.type: TRACE      # log SQL parameters
+  file:
+    name: /var/log/myapp.log
+  pattern:
+    console: &quot;%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n&quot;</pre>
+<p>Custom <code>logback-spring.xml</code> for advanced configuration (rolling files, async appenders, MDC).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q278">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">278</span>
+        <span class="q-title">. Logback vs Log4j2?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <table>
+<tr><th></th><th>Logback</th><th>Log4j2</th></tr>
+<tr><td>Default in Spring Boot</td><td>Yes</td><td>No (exclude and add)</td></tr>
+<tr><td>Performance</td><td>Good</td><td>Better (async appenders)</td></tr>
+<tr><td>Async appenders</td><td><code>AsyncAppender</code></td><td><code>AsyncLogger</code> (LMAX Disruptor)</td></tr>
+<tr><td>JSON logging</td><td>Via logstash-logback-encoder</td><td>Built-in</td></tr>
+<tr><td>Configuration</td><td><code>logback-spring.xml</code></td><td><code>log4j2-spring.xml</code></td></tr>
+<tr><td>Hot reload</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Security</td><td>Log4Shell vulnerability (2021) in Log4j2 2.x</td><td>CVE-2021-44228 (fixed in 2.17+)</td></tr>
+</table>
+<p>Switch to Log4j2:</p>
+<pre>&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+    &lt;exclusions&gt;
+        &lt;exclusion&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-logging&lt;/artifactId&gt;
+        &lt;/exclusion&gt;
+    &lt;/exclusions&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-log4j2&lt;/artifactId&gt;
+&lt;/dependency&gt;</pre>
+<p>For high-throughput services: Log4j2 async loggers are significantly faster.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q279">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">279</span>
+        <span class="q-title">. Exception handling in REST?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><strong>Option 1: <code>@RestControllerAdvice</code> (recommended)</strong>:</p>
+<pre>@RestControllerAdvice
+public class GlobalExceptionHandler {
+    
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ProblemDetail handleNotFound(ResourceNotFoundException ex, HttpServletRequest req) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        pd.setTitle(&quot;Resource Not Found&quot;);
+        pd.setDetail(ex.getMessage());
+        pd.setInstance(URI.create(req.getRequestURI()));
+        return pd;
+    }
+    
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ProblemDetail handleValidation(MethodArgumentNotValidException ex) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        pd.setTitle(&quot;Validation Failed&quot;);
+        Map&lt;String, String&gt; errors = new HashMap&lt;&gt;();
+        ex.getBindingResult().getFieldErrors().forEach(e -&gt; 
+            errors.put(e.getField(), e.getDefaultMessage()));
+        pd.setProperty(&quot;errors&quot;, errors);
+        return pd;
+    }
+}</pre>
+<p><strong><code>ProblemDetail</code></strong> (RFC 7807, Spring 6 / Spring Boot 3): Standard error response format.</p>
+<p><strong>Option 2: <code>ResponseEntityExceptionHandler</code></strong>: Extend for default Spring MVC exception handling.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q280">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">280</span>
+        <span class="q-title">. @ControllerAdvice?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><code>@ControllerAdvice</code> applies cross-cutting concerns to multiple controllers:</p>
+<ol>
+<li><strong>Exception handling</strong>: <code>@ExceptionHandler</code> methods</li>
+<li><strong>Model attributes</strong>: <code>@ModelAttribute</code> methods (adds to all model maps)</li>
+<li><strong>Data binding</strong>: <code>@InitBinder</code> methods (customize data binding)</li>
+</ol>
+<p><code>@RestControllerAdvice = @ControllerAdvice + @ResponseBody</code></p>
+<p>Scoping:</p>
+<pre>@ControllerAdvice(assignableTypes = {UserController.class, OrderController.class})
+@ControllerAdvice(basePackages = &quot;com.example.api&quot;)
+@ControllerAdvice(annotations = RestController.class)</pre>
+<p>Order: Multiple <code>@ControllerAdvice</code> can coexist; use <code>@Order</code> to prioritize.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q281">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">281</span>
+        <span class="q-title">. Validation mechanism?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Spring Boot uses <strong>Bean Validation (JSR 380 / Jakarta Validation)</strong> via Hibernate Validator:</p>
+<pre>// DTO with constraints
+public record CreateUserRequest(
+    @NotBlank(message = &quot;Name is required&quot;)
+    @Size(min = 2, max = 100)
+    String name,
+    
+    @Email
+    @NotNull
+    String email,
+    
+    @Min(18) @Max(120)
+    int age,
+    
+    @Pattern(regexp = &quot;^\\+?[1-9]\\d{1,14}$&quot;)
+    String phone
+) {}
+
+// Controller - @Valid triggers validation
+@PostMapping(&quot;/users&quot;)
+public UserDTO createUser(@Valid @RequestBody CreateUserRequest request) {
+    return userService.create(request);
+}
+
+// Service-level validation
+@Service
+@Validated
+public class UserService {
+    public void updateEmail(@Valid @Email String email, Long userId) { ... }
+}</pre>
+<p>Groups: Validate different constraints in different scenarios (<code>@Validated(CreateGroup.class)</code>).</p>
+<p>Custom validator:</p>
+<pre>@Target(FIELD) @Retention(RUNTIME)
+@Constraint(validatedBy = UniqueEmailValidator.class)
+public @interface UniqueEmail {
+    String message() default &quot;Email already exists&quot;;
+    Class&lt;?&gt;[] groups() default {};
+    Class&lt;? extends Payload&gt;[] payload() default {};
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q282">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">282</span>
+        <span class="q-title">. Spring Data JPA basics?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Spring Data JPA eliminates boilerplate DAO code:</p>
+<pre>// Repository - just declare the interface
+public interface UserRepository extends JpaRepository&lt;User, Long&gt; {
+    
+    // Derived query from method name
+    List&lt;User&gt; findByEmailAndActive(String email, boolean active);
+    
+    // Custom JPQL
+    @Query(&quot;SELECT u FROM User u WHERE u.age &gt; :minAge ORDER BY u.name&quot;)
+    List&lt;User&gt; findUsersOlderThan(@Param(&quot;minAge&quot;) int minAge);
+    
+    // Native SQL
+    @Query(value = &quot;SELECT * FROM users WHERE region = ?1&quot;, nativeQuery = true)
+    List&lt;User&gt; findByRegionNative(String region);
+    
+    // Pagination
+    Page&lt;User&gt; findByDepartment(String dept, Pageable pageable);
+    
+    // Projection
+    List&lt;UserNameEmail&gt; findAllProjectedBy();
+    
+    // Modifying
+    @Modifying
+    @Transactional
+    @Query(&quot;UPDATE User u SET u.active = false WHERE u.lastLogin &lt; :cutoff&quot;)
+    int deactivateOldUsers(@Param(&quot;cutoff&quot;) LocalDateTime cutoff);
+}</pre>
+<p><code>JpaRepository</code> provides: <code>save()</code>, <code>findById()</code>, <code>findAll()</code>, <code>delete()</code>, <code>count()</code>, <code>existsById()</code>, pagination, sorting.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q283">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">283</span>
+        <span class="q-title">. Repository patterns?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Spring Data offers multiple repository interfaces:</p>
+<ul>
+<li><code>CrudRepository&lt;T, ID&gt;</code>: Basic CRUD</li>
+<li><code>PagingAndSortingRepository&lt;T, ID&gt;</code>: + pagination/sorting</li>
+<li><code>JpaRepository&lt;T, ID&gt;</code>: + JPA-specific (flush, batch)</li>
+</ul>
+<p><strong>Custom base repository</strong>:</p>
+<pre>@NoRepositoryBean
+public interface BaseRepository&lt;T, ID&gt; extends JpaRepository&lt;T, ID&gt; {
+    List&lt;T&gt; findByCreatedAfter(LocalDateTime date);
+}</pre>
+<p><strong>Specification pattern</strong> (for dynamic queries):</p>
+<pre>public class UserSpecifications {
+    public static Specification&lt;User&gt; hasEmail(String email) {
+        return (root, query, cb) -&gt; cb.equal(root.get(&quot;email&quot;), email);
+    }
+    
+    public static Specification&lt;User&gt; isActive() {
+        return (root, query, cb) -&gt; cb.isTrue(root.get(&quot;active&quot;));
+    }
+}
+
+// Use:
+userRepository.findAll(
+    UserSpecifications.hasEmail(email).and(UserSpecifications.isActive())
+);</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q284">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">284</span>
+        <span class="q-title">. Transaction management?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Spring's <code>@Transactional</code> declarative transaction management:</p>
+<pre>@Service
+@Transactional(readOnly = true) // default for all methods
+public class OrderService {
+    
+    @Transactional // overrides class default - read-write
+    public Order createOrder(CreateOrderRequest request) {
+        Order order = new Order(request);
+        order = orderRepository.save(order);
+        inventoryService.reserve(order); // participates in same transaction
+        return order;
+    }
+    
+    @Transactional(
+        propagation = Propagation.REQUIRES_NEW, // new transaction always
+        isolation = Isolation.SERIALIZABLE,
+        timeout = 30, // seconds
+        rollbackFor = Exception.class, // rollback on all exceptions
+        noRollbackFor = InformationalException.class
+    )
+    public void auditOrder(Long orderId) { ... }
+}</pre>
+<p><strong>Propagation types</strong>:</p>
+<ul>
+<li><code>REQUIRED</code> (default): Join existing or create new</li>
+<li><code>REQUIRES_NEW</code>: Always create new, suspend existing</li>
+<li><code>NESTED</code>: Save point within existing transaction</li>
+<li><code>SUPPORTS</code>: Join if exists, non-transactional if not</li>
+<li><code>MANDATORY</code>: Must have existing transaction</li>
+<li><code>NEVER</code>: Must NOT have existing transaction</li>
+<li><code>NOT_SUPPORTED</code>: Suspend existing, run non-transactionally</li>
+</ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q285">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">285</span>
+        <span class="q-title">. @Transactional pitfalls?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <ol>
+<li><strong>Self-invocation</strong>: Calling a <code>@Transactional</code> method from within the same class bypasses the proxy:</li>
+</ol>
+<pre>@Service
+public class OrderService {
+    public void process() {
+        createOrder(); // NO transaction! Self-call bypasses proxy
+    }
+    
+    @Transactional
+    public void createOrder() { ... }
+}
+// Fix: Inject self, or move to separate class, or use AspectJ mode</pre>
+<ol>
+<li><strong>Non-public methods</strong>: <code>@Transactional</code> on private/protected/package methods is ignored (proxy limitation).</li>
+</ol>
+<ol>
+<li><strong>Checked exceptions don't rollback by default</strong>: Only <code>RuntimeException</code> and <code>Error</code>. Use <code>rollbackFor = Exception.class</code>.</li>
+</ol>
+<ol>
+<li><strong>Catching exception inside transaction</strong>: If you catch and swallow the exception, no rollback:</li>
+</ol>
+<pre>@Transactional
+void method() {
+    try { riskyOperation(); }
+    catch (Exception e) { log.error(e); } // COMMIT happens! No rollback
+}</pre>
+<ol>
+<li><strong>readOnly misuse</strong>: <code>readOnly = true</code> is a hint to optimize; doesn't prevent writes. Use it for query-only methods.</li>
+</ol>
+<ol>
+<li><strong>Propagation.REQUIRES_NEW + exception handling</strong>: Exception in outer transaction doesn't rollback inner, and vice versa.</li>
+</ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q286">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">286</span>
+        <span class="q-title">. Lazy vs eager loading?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><strong>Eager loading</strong>: Fetch associated entities immediately when parent is loaded.</p>
+<p><strong>Lazy loading</strong>: Fetch associated entities only when accessed.</p>
+<pre>@Entity
+public class Order {
+    @ManyToOne(fetch = FetchType.EAGER) // always loaded
+    private Customer customer;
+    
+    @OneToMany(fetch = FetchType.LAZY) // loaded on access
+    private List&lt;OrderItem&gt; items;
+}</pre>
+<p>JPA defaults: <code>@OneToMany</code> and <code>@ManyToMany</code> default to LAZY. <code>@ManyToOne</code> and <code>@OneToOne</code> default to EAGER.</p>
+<p><strong>LazyInitializationException</strong>: Accessing a lazy collection outside a transaction (session is closed):</p>
+<pre>Order order = orderRepository.findById(id).get();
+// Transaction closed here if method wasn&#x27;t @Transactional
+order.getItems().size(); // LazyInitializationException!</pre>
+<p>Fixes:</p>
+<ul>
+<li><code>@Transactional</code> on the service method</li>
+<li><code>JOIN FETCH</code> in JPQL: <code>SELECT o FROM Order o JOIN FETCH o.items WHERE o.id = :id</code></li>
+<li><code>@EntityGraph</code></li>
+<li>Projections</li>
+</ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q287">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">287</span>
+        <span class="q-title">. N+1 problem?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Classic N+1: Load N entities, then execute 1 query per entity to load associations = N+1 queries total.</p>
+<pre>// N+1 problem
+List&lt;Order&gt; orders = orderRepository.findAll(); // 1 query
+for (Order o : orders) {
+    System.out.println(o.getCustomer().getName()); // N queries!
+}
+// Total: 1 + N queries</pre>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><strong>JOIN FETCH</strong>:</li>
+</ol>
+<pre>@Query(&quot;SELECT o FROM Order o JOIN FETCH o.customer WHERE o.status = :status&quot;)
+List&lt;Order&gt; findByStatusWithCustomer(@Param(&quot;status&quot;) String status);</pre>
+<ol>
+<li><strong>@EntityGraph</strong>:</li>
+</ol>
+<pre>@EntityGraph(attributePaths = {&quot;customer&quot;, &quot;items&quot;})
+List&lt;Order&gt; findByStatus(String status);</pre>
+<ol>
+<li><strong>Batch fetching</strong>: <code>@BatchSize(size = 50)</code> on association – fetches 50 at a time instead of 1.</li>
+</ol>
+<ol>
+<li><strong>Projection/DTO</strong>: Fetch only needed data.</li>
+</ol>
+<ol>
+<li><strong>Enable <code>spring.jpa.properties.hibernate.default_batch_fetch_size=50</code></strong>: Global batch fetching.</li>
+</ol>
+<p>Detect N+1: Enable SQL logging, use <code>datasource-proxy</code>, Hibernate's statistics, tools like <code>p6spy</code>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q288">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">288</span>
+        <span class="q-title">. Paging and sorting?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <pre>// Repository
+public interface UserRepository extends JpaRepository&lt;User, Long&gt; {
+    Page&lt;User&gt; findByDepartment(String dept, Pageable pageable);
+    Slice&lt;User&gt; findByActive(boolean active, Pageable pageable); // no count query
+}
+
+// Service
+Pageable pageable = PageRequest.of(
+    pageNumber,      // 0-based
+    pageSize,
+    Sort.by(&quot;name&quot;).ascending().and(Sort.by(&quot;age&quot;).descending())
+);
+
+Page&lt;User&gt; page = userRepository.findByDepartment(&quot;Engineering&quot;, pageable);
+page.getContent();       // List&lt;User&gt; for current page
+page.getTotalElements(); // total count (runs COUNT query)
+page.getTotalPages();
+page.getNumber();        // current page
+page.hasNext();
+
+// REST controller
+@GetMapping(&quot;/users&quot;)
+public Page&lt;UserDTO&gt; getUsers(
+    @RequestParam(defaultValue = &quot;0&quot;) int page,
+    @RequestParam(defaultValue = &quot;20&quot;) int size,
+    @RequestParam(defaultValue = &quot;name&quot;) String sort) {
+    
+    Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
+    return userRepository.findAll(pageable).map(userMapper::toDto);
+}</pre>
+<p><strong><code>Slice</code> vs <code>Page</code></strong>: <code>Slice</code> doesn't execute COUNT query (better performance when total count not needed – e.g., infinite scroll).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q289">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">289</span>
+        <span class="q-title">. REST best practices?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <ol>
+<li><strong>Use proper HTTP methods</strong>: GET (read), POST (create), PUT (full update), PATCH (partial), DELETE</li>
+<li><strong>Meaningful URIs</strong>: <code>/users/{id}/orders</code> not <code>/getUserOrders</code></li>
+<li><strong>Plural nouns</strong>: <code>/users</code> not <code>/user</code></li>
+<li><strong>HTTP status codes</strong>: 200 OK, 201 Created, 204 No Content, 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 409 Conflict, 422 Unprocessable, 500 Internal Error</li>
+<li><strong>Versioning</strong>: <code>/api/v1/users</code> or <code>Accept: application/vnd.myapp.v1+json</code></li>
+<li><strong>Pagination</strong>: Consistent page/size parameters, include metadata</li>
+<li><strong>Filtering/sorting</strong>: Query params: <code>/users?status=active&amp;sort=name,asc</code></li>
+<li><strong>Consistent error responses</strong>: Problem Details (RFC 7807)</li>
+<li><strong>Idempotency</strong>: PUT, DELETE should be idempotent</li>
+<li><strong>HATEOAS</strong>: Link to related resources (see Q290)</li>
+<li><strong>Security</strong>: Always validate input, use HTTPS, authentication on all endpoints</li>
+<li><strong>Documentation</strong>: OpenAPI/Swagger</li>
+<li><strong>Content negotiation</strong>: Support <code>application/json</code>; potentially XML if required</li>
+</ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q290">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">290</span>
+        <span class="q-title">. HATEOAS?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><strong>HATEOAS (Hypermedia As The Engine Of Application State)</strong>: REST responses include links to related actions/resources.</p>
+<pre>{
+  &quot;id&quot;: 123,
+  &quot;name&quot;: &quot;Alice&quot;,
+  &quot;email&quot;: &quot;alice@example.com&quot;,
+  &quot;_links&quot;: {
+    &quot;self&quot;: { &quot;href&quot;: &quot;/api/users/123&quot; },
+    &quot;orders&quot;: { &quot;href&quot;: &quot;/api/users/123/orders&quot; },
+    &quot;update&quot;: { &quot;href&quot;: &quot;/api/users/123&quot;, &quot;method&quot;: &quot;PUT&quot; },
+    &quot;delete&quot;: { &quot;href&quot;: &quot;/api/users/123&quot;, &quot;method&quot;: &quot;DELETE&quot; }
+  }
+}</pre>
+<p>Spring HATEOAS:</p>
+<pre>@GetMapping(&quot;/users/{id}&quot;)
+public EntityModel&lt;UserDTO&gt; getUser(@PathVariable Long id) {
+    UserDTO user = userService.findById(id);
+    return EntityModel.of(user,
+        linkTo(methodOn(UserController.class).getUser(id)).withSelfRel(),
+        linkTo(methodOn(OrderController.class).getUserOrders(id)).withRel(&quot;orders&quot;)
+    );
+}</pre>
+<p>In practice: Full HATEOAS is rarely implemented in enterprise APIs. Self links and related resource links are the most common usage.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q291">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">291</span>
+        <span class="q-title">. Security basics?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Spring Security added via <code>spring-boot-starter-security</code>. Auto-configures:</p>
+<ul>
+<li>HTTP Basic auth</li>
+<li>Default in-memory user</li>
+<li>CSRF protection</li>
+<li>Secure all endpoints</li>
+</ul>
+<p>Custom configuration (Spring Boot 3 / Spring Security 6):</p>
+<pre>@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+    
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -&gt; csrf.disable()) // for REST APIs
+            .sessionManagement(sm -&gt; sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -&gt; auth
+                .requestMatchers(&quot;/api/public/**&quot;).permitAll()
+                .requestMatchers(&quot;/api/admin/**&quot;).hasRole(&quot;ADMIN&quot;)
+                .requestMatchers(HttpMethod.GET, &quot;/api/**&quot;).hasAnyRole(&quot;USER&quot;, &quot;ADMIN&quot;)
+                .anyRequest().authenticated()
+            )
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
+    }
+    
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(12); // strength 12
+    }
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q292">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">292</span>
+        <span class="q-title">. JWT authentication?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <pre>// JWT Filter
+@Component
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, 
+                                    HttpServletResponse response, 
+                                    FilterChain chain) throws IOException, ServletException {
+        String authHeader = request.getHeader(&quot;Authorization&quot;);
+        
+        if (authHeader == null || !authHeader.startsWith(&quot;Bearer &quot;)) {
+            chain.doFilter(request, response);
+            return;
+        }
+        
+        String token = authHeader.substring(7);
+        String username = jwtService.extractUsername(token);
+        
+        if (username != null &amp;&amp; SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            
+            if (jwtService.isTokenValid(token, userDetails)) {
+                UsernamePasswordAuthenticationToken authToken = 
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            }
+        }
+        chain.doFilter(request, response);
+    }
+}
+
+// JWT Service
+@Service
+public class JwtService {
+    @Value(&quot;${jwt.secret}&quot;) private String secret;
+    @Value(&quot;${jwt.expiration:3600}&quot;) private long expiration;
+    
+    public String generateToken(UserDetails userDetails) {
+        return Jwts.builder()
+            .subject(userDetails.getUsername())
+            .issuedAt(new Date())
+            .expiration(new Date(System.currentTimeMillis() + expiration * 1000))
+            .claim(&quot;roles&quot;, userDetails.getAuthorities())
+            .signWith(getSigningKey())
+            .compact();
+    }
+}</pre>
+<p>Key security considerations:</p>
+<ul>
+<li>Store JWT secret securely (Vault, Secrets Manager)</li>
+<li>Short expiration + refresh token pattern</li>
+<li>Token invalidation/blacklist for logout</li>
+<li>Validate issuer, audience, not-before claims</li>
+<li>Use RS256 (asymmetric) over HS256 for microservices</li>
+</ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q293">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">293</span>
+        <span class="q-title">. OAuth2 with Spring?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Spring Security OAuth2 (Spring Boot 3):</p>
+<pre>spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope: openid, profile, email
+      resourceserver:
+        jwt:
+          issuer-uri: https://accounts.google.com</pre>
+<p><strong>Resource Server</strong> (validate JWT from auth server):</p>
+<pre>@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+    
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .oauth2ResourceServer(oauth2 -&gt; oauth2
+                .jwt(jwt -&gt; jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+            );
+        return http.build();
+    }
+    
+    @Bean
+    JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter converter = new JwtGrantedAuthoritiesConverter();
+        converter.setAuthoritiesClaimName(&quot;roles&quot;);
+        converter.setAuthorityPrefix(&quot;ROLE_&quot;);
+        JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
+        jwtConverter.setJwtGrantedAuthoritiesConverter(converter);
+        return jwtConverter;
+    }
+}</pre>
+<p>Grant types: Authorization Code (web), Client Credentials (machine-to-machine), Device Flow (IoT).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q294">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">294</span>
+        <span class="q-title">. Caching in Spring?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <pre>// Enable caching
+@SpringBootApplication
+@EnableCaching
+public class App { }
+
+// Use caching
+@Service
+public class ProductService {
+    
+    @Cacheable(value = &quot;products&quot;, key = &quot;#id&quot;, unless = &quot;#result == null&quot;)
+    public Product getProduct(Long id) {
+        return repository.findById(id).orElse(null); // DB call only on cache miss
+    }
+    
+    @CachePut(value = &quot;products&quot;, key = &quot;#product.id&quot;) // always execute + update cache
+    public Product updateProduct(Product product) {
+        return repository.save(product);
+    }
+    
+    @CacheEvict(value = &quot;products&quot;, key = &quot;#id&quot;) // remove from cache
+    public void deleteProduct(Long id) {
+        repository.deleteById(id);
+    }
+    
+    @CacheEvict(value = &quot;products&quot;, allEntries = true) // clear entire cache
+    @Scheduled(fixedRate = 3600000) // hourly
+    public void evictAllProducts() { }
+    
+    @Caching(evict = {
+        @CacheEvict(&quot;products&quot;),
+        @CacheEvict(value = &quot;productsByCategory&quot;, key = &quot;#product.category&quot;)
+    })
+    public void processProduct(Product product) { }
+}</pre>
+<p>Default cache: <code>ConcurrentMapCacheManager</code> (in-memory, no TTL). Configure TTL with Caffeine, Redis, etc.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q295">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">295</span>
+        <span class="q-title">. Redis integration?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <pre>&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-data-redis&lt;/artifactId&gt;
+&lt;/dependency&gt;</pre>
+<pre>spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: ${REDIS_PASSWORD}
+      lettuce:
+        pool:
+          max-active: 10</pre>
+<p><strong>Using as cache</strong>:</p>
+<pre>@Bean
+public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
+    RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
+        .entryTtl(Duration.ofMinutes(30))
+        .serializeValuesWith(RedisSerializationContext.SerializationPair
+            .fromSerializer(new GenericJackson2JsonRedisSerializer()));
+    
+    return RedisCacheManager.builder(connectionFactory)
+        .cacheDefaults(config)
+        .withCacheConfiguration(&quot;products&quot;, 
+            RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofHours(1)))
+        .build();
+}</pre>
+<p><strong>Using <code>RedisTemplate</code> directly</strong>:</p>
+<pre>@Autowired RedisTemplate&lt;String, Object&gt; redisTemplate;
+
+redisTemplate.opsForValue().set(&quot;key&quot;, value, Duration.ofMinutes(30));
+Object value = redisTemplate.opsForValue().get(&quot;key&quot;);
+redisTemplate.opsForHash().put(&quot;hash&quot;, &quot;field&quot;, &quot;value&quot;);
+redisTemplate.opsForList().leftPush(&quot;list&quot;, &quot;element&quot;);</pre>
+<p><strong>Session storage</strong>:</p>
+<pre>&lt;dependency&gt;spring-session-data-redis&lt;/dependency&gt;</pre>
+<pre>@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 1800)</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q296">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">296</span>
+        <span class="q-title">. Microservices with Spring Boot?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Spring Boot is a natural fit for microservices:</p>
+<p><strong>Principles</strong>:</p>
+<ul>
+<li>Single responsibility: one service per bounded context</li>
+<li>Independent deployability</li>
+<li>Own data store per service</li>
+<li>Communicate via HTTP/REST or messaging (Kafka, RabbitMQ)</li>
+</ul>
+<p><strong>Common patterns</strong>:</p>
+<pre>// Service discovery (Eureka)
+@EnableEurekaClient
+
+// Load balancing
+@LoadBalanced
+@Bean RestTemplate restTemplate() { return new RestTemplate(); }
+
+// Feign client (declarative HTTP)
+@FeignClient(name = &quot;order-service&quot;)
+public interface OrderClient {
+    @GetMapping(&quot;/orders/{id}&quot;)
+    OrderDTO getOrder(@PathVariable Long id);
+}
+
+// Config server
+spring.config.import=configserver:http://config-server:8888
+
+// Distributed tracing (Micrometer Tracing + Zipkin)
+management.tracing.sampling.probability=1.0</pre>
+<p><strong>Challenges</strong>: Network latency, eventual consistency, distributed transactions (Saga pattern), service discovery, centralized logging, distributed tracing.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q297">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">297</span>
+        <span class="q-title">. Spring Cloud overview?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Spring Cloud provides tools for distributed systems:</p>
+<table>
+<tr><th>Component</th><th>Purpose</th></tr>
+<tr><td>Spring Cloud Config</td><td>Centralized config server</td></tr>
+<tr><td>Netflix Eureka</td><td>Service registry/discovery</td></tr>
+<tr><td>Spring Cloud Gateway</td><td>API gateway, routing, rate limiting</td></tr>
+<tr><td>OpenFeign</td><td>Declarative REST client</td></tr>
+<tr><td>Resilience4j</td><td>Circuit breaker, retry, rate limiter</td></tr>
+<tr><td>Spring Cloud Sleuth</td><td>Distributed tracing (replaced by Micrometer Tracing)</td></tr>
+<tr><td>Zipkin</td><td>Trace visualization</td></tr>
+<tr><td>Spring Cloud Bus</td><td>Propagate config changes via message broker</td></tr>
+<tr><td>Spring Cloud Stream</td><td>Message-driven microservices (Kafka/RabbitMQ)</td></tr>
+</table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q298">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">298</span>
+        <span class="q-title">. Circuit breaker?</span>
+        <span class="difficulty diff-exp">EXPERT</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Circuit breaker prevents cascading failures when a dependency is down:</p>
+<p><strong>States</strong>:</p>
+<ul>
+<li><strong>CLOSED</strong>: Normal operation; requests pass through</li>
+<li><strong>OPEN</strong>: Too many failures; requests fail fast (no call to dependency)</li>
+<li><strong>HALF-OPEN</strong>: After wait period, allow limited requests to test recovery</li>
+</ul>
+<pre>// Resilience4j
+@CircuitBreaker(name = &quot;orderService&quot;, fallbackMethod = &quot;fallbackOrder&quot;)
+@Retry(name = &quot;orderService&quot;)
+@TimeLimiter(name = &quot;orderService&quot;)
+public CompletableFuture&lt;Order&gt; getOrder(Long id) {
+    return CompletableFuture.supplyAsync(() -&gt; orderClient.getOrder(id));
+}
+
+public CompletableFuture&lt;Order&gt; fallbackOrder(Long id, Exception ex) {
+    log.warn(&quot;Circuit open for order {}: {}&quot;, id, ex.getMessage());
+    return CompletableFuture.completedFuture(Order.empty(id));
+}</pre>
+<pre>resilience4j:
+  circuitbreaker:
+    instances:
+      orderService:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 30s
+        permittedNumberOfCallsInHalfOpenState: 3</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q299">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">299</span>
+        <span class="q-title">. Resilience4j?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Resilience4j provides multiple resilience patterns:</p>
+<ol>
+<li><strong>Circuit Breaker</strong>: See Q298</li>
+<li><strong>Retry</strong>:</li>
+</ol>
+<pre>@Retry(name = &quot;externalApi&quot;, fallbackMethod = &quot;fallback&quot;)
+public String callApi() { ... }</pre>
+<pre>resilience4j.retry.instances.externalApi:
+  maxAttempts: 3
+  waitDuration: 500ms
+  enableExponentialBackoff: true
+  exponentialBackoffMultiplier: 2</pre>
+<ol>
+<li><strong>Rate Limiter</strong>:</li>
+</ol>
+<pre>@RateLimiter(name = &quot;apiGateway&quot;)
+public String callGateway() { ... }</pre>
+<ol>
+<li><strong>Bulkhead</strong>: Limit concurrent calls (Thread pool or Semaphore)</li>
+</ol>
+<pre>@Bulkhead(name = &quot;service&quot;, type = Bulkhead.Type.SEMAPHORE)</pre>
+<ol>
+<li><strong>Time Limiter</strong>: Timeout for async calls</li>
+</ol>
+<ol>
+<li><strong>Cache</strong>: Simple result caching</li>
+</ol>
+<p>Combining:</p>
+<pre>@CircuitBreaker(name = &quot;svc&quot;, fallbackMethod = &quot;fb&quot;)
+@Retry(name = &quot;svc&quot;)
+@RateLimiter(name = &quot;svc&quot;)
+public Result callService() { ... }
+// Order: RateLimiter → CircuitBreaker → Retry</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q300">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">300</span>
+        <span class="q-title">. Production readiness checklist?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>A Spring Boot service is production-ready when it has:</p>
+<p><strong>Observability</strong>:</p>
+<ul>
+<li>[ ] Structured logging with correlation IDs (MDC)</li>
+<li>[ ] Metrics exposed (<code>/actuator/prometheus</code> or micrometer)</li>
+<li>[ ] Distributed tracing (Micrometer Tracing + Zipkin/Jaeger)</li>
+<li>[ ] Health checks for orchestration (<code>/actuator/health/liveness</code>, <code>readiness</code>)</li>
+<li>[ ] Alerting on error rate, latency, saturation</li>
+</ul>
+<p><strong>Resilience</strong>:</p>
+<ul>
+<li>[ ] Circuit breakers for external dependencies</li>
+<li>[ ] Retry with backoff</li>
+<li>[ ] Timeouts on all external calls (HTTP client, DB, etc.)</li>
+<li>[ ] Bulkheads (bounded thread pools)</li>
+<li>[ ] Graceful shutdown (<code>spring.lifecycle.timeout-per-shutdown-phase=30s</code>)</li>
+</ul>
+<p><strong>Security</strong>:</p>
+<ul>
+<li>[ ] Authentication + authorization</li>
+<li>[ ] Secrets in vault/environment, not in code</li>
+<li>[ ] HTTPS enforced</li>
+<li>[ ] Input validation</li>
+<li>[ ] Dependency vulnerability scan (OWASP Dependency Check, Snyk)</li>
+<li>[ ] Actuator endpoints secured or restricted</li>
+</ul>
+<p><strong>Performance</strong>:</p>
+<ul>
+<li>[ ] Connection pool tuned (HikariCP: <code>maximum-pool-size</code>)</li>
+<li>[ ] Database indexes for common queries</li>
+<li>[ ] Caching for expensive/repeated operations</li>
+<li>[ ] Thread pool sized appropriately</li>
+<li>[ ] JVM heap and GC tuned</li>
+<li>[ ] Load test results acceptable</li>
+</ul>
+<p><strong>Deployment</strong>:</p>
+<ul>
+<li>[ ] Dockerfile with non-root user, minimal base image</li>
+<li>[ ] Kubernetes liveness/readiness probes configured</li>
+<li>[ ] Resource requests/limits set</li>
+<li>[ ] Rolling update strategy</li>
+<li>[ ] <code>-XX:+UseContainerSupport</code> for JVM container awareness</li>
+<li>[ ] Environment-specific configuration externalized</li>
+</ul>
+<p><strong>Testing</strong>:</p>
+<ul>
+<li>[ ] Unit tests (target >80% coverage on business logic)</li>
+<li>[ ] Integration tests (Testcontainers for real DB)</li>
+<li>[ ] Contract tests (Pact or Spring Cloud Contract)</li>
+<li>[ ] Load test results meet SLA</li>
+</ul>
+<p><strong>Documentation</strong>:</p>
+<ul>
+<li>[ ] OpenAPI/Swagger (<code>springdoc-openapi</code>)</li>
+<li>[ ] README with runbook</li>
+<li>[ ] Architecture decision records (ADRs)</li>
+</ul>
+<p><strong>Ops</strong>:</p>
+<ul>
+<li>[ ] Log rotation configured</li>
+<li>[ ] Heap dump path set (<code>-XX:HeapDumpPath</code>)</li>
+<li>[ ] OOM action: <code>-XX:+ExitOnOutOfMemoryError</code></li>
+<li>[ ] JFR enabled for profiling capability</li>
+<li>[ ] Runbook for common failure scenarios</li>
+</ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="height:60px"></div>
+  </div>
+</div>
+
+<script>
+function toggle(header) {
+  const card = header.parentElement;
+  card.classList.toggle('open');
+}
+let allExpanded = false;
+function toggleAll() {
+  allExpanded = !allExpanded;
+  document.querySelectorAll('.card').forEach(c => {
+    if (allExpanded) c.classList.add('open'); else c.classList.remove('open');
+  });
+  const btn = document.querySelector('.expand-all');
+  if (btn) btn.textContent = allExpanded ? 'Collapse All' : 'Expand All';
+}
+let activeFilter = 'all';
+function filterBy(level, btn) {
+  activeFilter = level;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+function filterCards() { applyFilters(); }
+function applyFilters() {
+  const input = document.getElementById('searchInput');
+  const query = input ? input.value.toLowerCase() : '';
+  document.querySelectorAll('.card').forEach(card => {
+    const title = card.querySelector('.q-title') ? card.querySelector('.q-title').textContent.toLowerCase() : '';
+    const body = card.querySelector('.answer') ? card.querySelector('.answer').textContent.toLowerCase() : '';
+    const diff = card.querySelector('.difficulty');
+    const diffClass = diff ? diff.className : '';
+    const matchesText = !query || title.includes(query) || body.includes(query);
+    const matchesFilter = activeFilter === 'all' || diffClass.includes('diff-' + activeFilter);
+    if (matchesText && matchesFilter) {
+      card.style.display = '';
+      if (query) card.classList.add('open');
+    } else {
+      card.style.display = 'none';
+    }
+  });
+  document.querySelectorAll('.section-title').forEach(st => {
+    let next = st.nextElementSibling;
+    let hasVisible = false;
+    while (next && !next.classList.contains('section-title')) {
+      if (next.style.display !== 'none') hasVisible = true;
+      next = next.nextElementSibling;
+    }
+    st.style.display = hasVisible ? '' : 'none';
+  });
+}
+function scrollToCard(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    el.classList.add('open', 'highlighted');
+    setTimeout(() => el.classList.remove('highlighted'), 2000);
+    document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+    const link = document.querySelector('.sidebar-link[data-target="' + id + '"]');
+    if (link) link.classList.add('active');
+  }
+}
+const observer = typeof IntersectionObserver !== 'undefined' ? new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+      const link = document.querySelector('.sidebar-link[data-target="' + id + '"]');
+      if (link) link.classList.add('active');
+    }
+  });
+}, { threshold: 0.3, rootMargin: '-100px 0px -50% 0px' }) : null;
+if (observer) document.querySelectorAll('.card[id]').forEach(c => observer.observe(c));
+</script>
+
+</body>
+</html>

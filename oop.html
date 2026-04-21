@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PART 3: Object-Oriented Design &amp; SOLID (Q76–105) — Java Interview Guide</title>
+
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #a855f7;
+    --green: #22c55e;
+    --yellow: #fbbf24;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --code-bg: #0d1117;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* TOPNAV */
+  .topnav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    backdrop-filter: blur(10px);
+    overflow-x: auto;
+  }
+  .topnav::-webkit-scrollbar { display: none; }
+  .nav-logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--accent);
+    margin-right: 32px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-link {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    white-space: nowrap;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .nav-link:hover { color: var(--text); background: var(--surface2); }
+  .nav-link.active { color: #000; }
+
+  /* HEADER */
+  header {
+    padding: 48px 40px 32px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, #0a0e1a 0%, #0f1729 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(0,212,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    opacity: 0.8;
+  }
+  h1 {
+    font-size: clamp(24px, 4vw, 48px);
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+  .subtitle { color: var(--muted); font-size: 15px; max-width: 500px; }
+  .stats-row { display: flex; gap: 20px; margin-top: 24px; flex-wrap: wrap; }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+  }
+  .stat-num { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent); }
+
+  /* CONTROLS */
+  .controls {
+    padding: 16px 40px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    position: sticky;
+    top: 52px;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+  .search-wrap { position: relative; flex: 1; min-width: 180px; max-width: 360px; }
+  .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+  input[type="text"] {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px 8px 34px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type="text"]:focus { border-color: var(--accent); }
+  input[type="text"]::placeholder { color: var(--muted); }
+  .filter-btn {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 13px;
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #000; }
+  .expand-all {
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 13px;
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .expand-all:hover { border-color: var(--accent3); color: var(--accent3); }
+
+  /* LAYOUT */
+  .main { display: flex; }
+  .sidebar {
+    width: 240px;
+    min-width: 240px;
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+    position: sticky;
+    top: calc(52px + 56px);
+    height: calc(100vh - 108px);
+    overflow-y: auto;
+    background: var(--surface);
+  }
+  .sidebar::-webkit-scrollbar { width: 3px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .cat-header {
+    padding: 6px 16px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px 6px 24px;
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+    font-weight: 500;
+  }
+  .sidebar-link:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+  .sidebar-link.active { color: var(--accent); border-left-color: var(--accent); background: rgba(0,212,255,0.05); }
+
+  /* CONTENT */
+  .content { flex: 1; padding: 24px 32px; min-width: 0; }
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 24px 0 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: #2a3f60; }
+  .card.open { border-color: #2a4a70; }
+  .card.highlighted { border-color: var(--accent); }
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+  }
+  .card-header:hover { background: var(--surface2); }
+  .q-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    min-width: 28px;
+    font-weight: 600;
+  }
+  .q-title { flex: 1; font-size: 14px; font-weight: 600; }
+  .difficulty {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 3px 7px;
+    border-radius: 4px;
+  }
+  .diff-basic { background: rgba(34,197,94,0.15); color: #22c55e; }
+  .diff-mid { background: rgba(251,191,36,0.15); color: #fbbf24; }
+  .diff-adv { background: rgba(255,107,53,0.15); color: #ff6b35; }
+  .diff-exp { background: rgba(168,85,247,0.15); color: #a855f7; }
+  .chevron { color: var(--muted); transition: transform 0.3s; flex-shrink: 0; }
+  .card.open .chevron { transform: rotate(180deg); }
+  .card-body { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+  .card.open .card-body { max-height: 9999px; }
+  .card-inner { border-top: 1px solid var(--border); padding: 20px; }
+  .answer p { margin-bottom: 12px; line-height: 1.7; font-size: 14px; }
+  .answer strong { color: #fff; }
+  .answer em { color: var(--accent); font-style: normal; font-weight: 600; }
+  .answer code {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #7dd3fc;
+  }
+  .answer pre {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 12px;
+    line-height: 1.6;
+    overflow-x: auto;
+    margin: 12px 0;
+    color: #e2e8f0;
+    white-space: pre;
+  }
+  .answer table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 13px;
+  }
+  .answer th, .answer td {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+  .answer th { background: var(--surface2); color: var(--accent); font-weight: 700; font-size: 11px; letter-spacing: 0.5px; }
+  .answer tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+  .answer ul, .answer ol { padding-left: 20px; margin: 8px 0 12px; }
+  .answer li { margin-bottom: 6px; line-height: 1.6; font-size: 14px; }
+  .answer h4 { color: var(--accent2); font-size: 13px; margin: 12px 0 6px; }
+  .tip-box {
+    background: rgba(34,197,94,0.08);
+    border: 1px solid rgba(34,197,94,0.2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    margin: 12px 0;
+    line-height: 1.6;
+  }
+  .warn-box {
+    background: rgba(251,191,36,0.08);
+    border: 1px solid rgba(251,191,36,0.2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    margin: 12px 0;
+    line-height: 1.6;
+  }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .tag {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 9px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  /* INDEX PAGE */
+  .index-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .part-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: block;
+    position: relative;
+    overflow: hidden;
+  }
+  .part-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--card-color);
+  }
+  .part-card:hover { border-color: #2a3f60; transform: translateY(-2px); }
+  .part-icon { font-size: 32px; margin-bottom: 14px; }
+  .part-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .part-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+  .part-desc { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+  .part-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--card-color);
+  }
+  .index-hero {
+    padding: 60px 40px 40px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, #0a0e1a 0%, #0f1729 100%);
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+  .index-hero::before {
+    content: '';
+    position: absolute;
+    top: -100px; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 400px;
+    background: radial-gradient(circle, rgba(0,212,255,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0.8;
+  }
+  .hero-title {
+    font-size: clamp(32px, 6vw, 64px);
+    font-weight: 800;
+    line-height: 1.05;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+  .hero-sub { color: var(--muted); font-size: 16px; max-width: 560px; margin: 0 auto 28px; }
+  .hero-stats { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+  .hero-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 20px;
+    text-align: center;
+  }
+  .hero-stat-num { font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 700; color: var(--accent); }
+  .hero-stat-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* BREADCRUMB */
+  .breadcrumb {
+    padding: 12px 40px;
+    font-size: 12px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .breadcrumb a { color: var(--accent); }
+  .breadcrumb a:hover { text-decoration: underline; }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .topnav { padding: 0 16px; }
+    header, .controls { padding-left: 16px; padding-right: 16px; }
+    .content { padding: 16px; }
+    .index-grid { padding: 20px; grid-template-columns: 1fr; }
+    .index-hero { padding: 40px 20px; }
+    .breadcrumb { padding: 10px 16px; }
+  }
+</style>
+
+</head>
+<body>
+<nav class="topnav"><span class="nav-logo">// Java Interview</span><div class="nav-links"><a href="index.html" class="nav-link">🏠 Home</a><a href="basics.html" class="nav-link">☕ Basics</a><a href="versions.html" class="nav-link">🚀 Versions</a><a href="oop.html" class="nav-link active" style="background:var(--accent);color:#000;">🧩 OOP</a><a href="collections.html" class="nav-link">📦 Collections</a><a href="exceptions.html" class="nav-link">⚠️ Exceptions</a><a href="concurrency.html" class="nav-link">⚡ Concurrency</a><a href="advanced-concurrency.html" class="nav-link">🔬 Advanced</a></div></nav>
+<div class="breadcrumb">
+  <a href="index.html">Home</a> › PART 3: Object-Oriented Design &amp; SOLID (Q76–105)
+</div>
+<header>
+  <div class="header-tag">// Java Interview — Senior Level</div>
+  <h1>🧩 PART 3: Object-Oriented Design &amp; SOLID (Q76–105)</h1>
+  <p class="subtitle">SOLID principles, design patterns, composition vs inheritance, interfaces, abstract classes.</p>
+  <div class="stats-row">
+    <div class="stat"><span class="stat-num">30</span> Questions</div>
+    
+    <div class='stat'><span class='stat-num'>10</span> Mid</div>
+    <div class='stat'><span class='stat-num'>19</span> Advanced</div>
+    <div class='stat'><span class='stat-num'>1</span> Expert</div>
+  </div>
+</header>
+<div class="controls">
+  <div class="search-wrap">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="searchInput" placeholder="Search questions..." oninput="filterCards()">
+  </div>
+  <button class="filter-btn active" onclick="filterBy('all',this)">All</button>
+  
+  <button class='filter-btn' onclick='filterBy("mid",this)'>Mid</button>
+  <button class='filter-btn' onclick='filterBy("adv",this)'>Advanced</button>
+  <button class='filter-btn' onclick='filterBy("exp",this)'>Expert</button>
+  <button class="expand-all" onclick="toggleAll()">Expand All</button>
+</div>
+<div class="main">
+  <aside class="sidebar">
+    <div class="cat-header">Questions</div>
+    <div class="sidebar-link" data-target="q76" onclick="scrollToCard('q76')">Q76. What are SOLID principles?</div>
+<div class="sidebar-link" data-target="q79" onclick="scrollToCard('q79')">Q79. Liskov Substitution Principle?</div>
+<div class="sidebar-link" data-target="q82" onclick="scrollToCard('q82')">Q82. Composition vs inheritance?</div>
+<div class="sidebar-link" data-target="q85" onclick="scrollToCard('q85')">Q85. Cohesion vs coupling?</div>
+<div class="sidebar-link" data-target="q88" onclick="scrollToCard('q88')">Q88. Why Serializable is a marker?</div>
+<div class="sidebar-link" data-target="q91" onclick="scrollToCard('q91')">Q91. Default methods in interface?</div>
+<div class="sidebar-link" data-target="q94" onclick="scrollToCard('q94')">Q94. When to use interface?</div>
+<div class="sidebar-link" data-target="q97" onclick="scrollToCard('q97')">Q97. Thread-safe singleton?</div>
+<div class="sidebar-link" data-target="q100" onclick="scrollToCard('q100')">Q100. . Strategy pattern?</div>
+<div class="sidebar-link" data-target="q103" onclick="scrollToCard('q103')">Q103. . Chain of Responsibility?</div>
+
+  </aside>
+  <div class="content">
+    
+    <div class="card" id="q76">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">76</span>
+        <span class="q-title">What are SOLID principles?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>SOLID is an acronym for five OOP design principles that make software more maintainable, scalable, and testable:</p>
+<ul>
+<li><strong>S</strong> – Single Responsibility Principle</li>
+<li><strong>O</strong> – Open/Closed Principle</li>
+<li><strong>L</strong> – Liskov Substitution Principle</li>
+<li><strong>I</strong> – Interface Segregation Principle</li>
+<li><strong>D</strong> – Dependency Inversion Principle</li>
+</ul>
+<p>Introduced by Robert C. Martin ("Uncle Bob"). Not a strict rulebook but guidelines for managing complexity.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q77">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">77</span>
+        <span class="q-title">Explain Single Responsibility Principle?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>A class should have <strong>only one reason to change</strong> – it should have one primary responsibility.</p>
+<p><strong>Violation</strong>:</p>
+<pre>class UserService {
+    void createUser(User user) { ... } // business logic
+    void saveUser(User user) { ... }   // data access
+    String generateReport(User user) { ... } // reporting
+    void sendEmail(User user) { ... }  // notification
+}</pre>
+<p><strong>Correct</strong>:</p>
+<pre>class UserService { void createUser(User user) { ... } }
+class UserRepository { void save(User user) { ... } }
+class UserReportGenerator { String generate(User user) { ... } }
+class EmailNotificationService { void sendWelcomeEmail(User user) { ... } }</pre>
+<p><strong>Senior nuance</strong>: "Reason to change" = stakeholder/actor. Business rules change when product owners request it; DB schema changes when DBAs require it; report format changes when marketing asks. These are different reasons.</p>
+<p>SRP doesn't mean "one method per class" – it means one cohesive responsibility. A <code>UserValidator</code> validating user fields has one responsibility even if it has many validation methods.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q78">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">78</span>
+        <span class="q-title">Open/Closed Principle?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Software entities should be <strong>open for extension, closed for modification</strong>.</p>
+<p><strong>Violation</strong>: Adding a new shape requires modifying existing code:</p>
+<pre>class AreaCalculator {
+    double area(Object shape) {
+        if (shape instanceof Circle) return ...; // modify this every time
+        if (shape instanceof Rectangle) return ...;
+    }
+}</pre>
+<p><strong>Correct</strong>: Extend by adding new implementations:</p>
+<pre>interface Shape { double area(); }
+class Circle implements Shape { public double area() { return Math.PI * r * r; } }
+class Rectangle implements Shape { public double area() { return w * h; } }
+
+class AreaCalculator {
+    double totalArea(List&lt;Shape&gt; shapes) {
+        return shapes.stream().mapToDouble(Shape::area).sum(); // never changes
+    }
+}</pre>
+<p><strong>Mechanisms</strong>: Abstraction (interfaces, abstract classes), Strategy pattern, Template Method, Decorator.</p>
+<p><strong>Senior nuance</strong>: 100% OCP is impractical. The goal is to be strategic about which dimensions of change to "close". Use OCP for points of known variability. Getting the abstraction wrong is costly.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q79">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">79</span>
+        <span class="q-title">Liskov Substitution Principle?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Objects of a subclass must be <strong>substitutable for objects of the superclass</strong> without altering program correctness.</p>
+<p>Formally: If S is a subtype of T, then objects of type T may be replaced with objects of type S without altering any of the desirable properties of the program.</p>
+<p><strong>Classic violation – Rectangle/Square</strong>:</p>
+<pre>class Rectangle {
+    void setWidth(int w) { this.width = w; }
+    void setHeight(int h) { this.height = h; }
+    int area() { return width * height; }
+}
+
+class Square extends Rectangle {
+    @Override void setWidth(int w) { this.width = this.height = w; } // violation!
+    @Override void setHeight(int h) { this.width = this.height = h; }
+}
+
+void test(Rectangle r) {
+    r.setWidth(5); r.setHeight(4);
+    assert r.area() == 20; // fails for Square!
+}</pre>
+<p><strong>Rules</strong>:</p>
+<ul>
+<li>Preconditions can only be weakened in subtype (accept more)</li>
+<li>Postconditions can only be strengthened in subtype (promise more)</li>
+<li>Invariants of supertype must be maintained</li>
+<li>No new exceptions (or only subtypes of parent's exceptions)</li>
+</ul>
+<p><strong>LSP and design</strong>: Java Stack extends Vector violates LSP – you can call <code>add(0, element)</code> on a Stack reference, breaking stack semantics.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q80">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">80</span>
+        <span class="q-title">Interface Segregation Principle?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Clients should not be forced to depend on interfaces they don't use.</p>
+<p><strong>Violation</strong>:</p>
+<pre>interface Worker {
+    void work();
+    void eat();
+    void sleep();
+}
+
+class Robot implements Worker {
+    void work() { ... }
+    void eat() { throw new UnsupportedOperationException(); } // forced!
+    void sleep() { throw new UnsupportedOperationException(); }
+}</pre>
+<p><strong>Correct</strong>:</p>
+<pre>interface Workable { void work(); }
+interface Eatable { void eat(); }
+interface Sleepable { void sleep(); }
+
+class Human implements Workable, Eatable, Sleepable { ... }
+class Robot implements Workable { ... }</pre>
+<p><strong>Senior nuance</strong>: Don't over-segregate. Splitting into too many tiny interfaces creates interface explosion. Balance based on client needs. ISP is about designing interfaces from the <em>client's perspective</em>, not the implementor's.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q81">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">81</span>
+        <span class="q-title">Dependency Inversion Principle?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <ol>
+<li>High-level modules should not depend on low-level modules. Both should depend on abstractions.</li>
+<li>Abstractions should not depend on details. Details should depend on abstractions.</li>
+</ol>
+<p><strong>Violation</strong>:</p>
+<pre>class OrderService { // high-level
+    private MySQLOrderRepository repo = new MySQLOrderRepository(); // depends on concrete
+}</pre>
+<p><strong>Correct</strong>:</p>
+<pre>interface OrderRepository { void save(Order o); }
+
+class MySQLOrderRepository implements OrderRepository { ... }
+class MongoOrderRepository implements OrderRepository { ... }
+
+class OrderService { // high-level
+    private final OrderRepository repo; // depends on abstraction
+    
+    public OrderService(OrderRepository repo) { this.repo = repo; } // inject
+}</pre>
+<p>DIP enables <strong>Dependency Injection (DI)</strong> – the practice of providing dependencies from outside. Spring is essentially a DI container implementing DIP.</p>
+<p><strong>Inversion</strong>: Traditionally, high-level code creates low-level dependencies. DIP <em>inverts</em> this – the framework/container provides them.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q82">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">82</span>
+        <span class="q-title">Composition vs inheritance?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><strong>Inheritance</strong>: "IS-A" – extend a class to reuse behavior. Tightly coupled to parent.</p>
+<p><strong>Composition</strong>: "HAS-A" – hold a reference to another object and delegate. Loose coupling.</p>
+<pre>// Inheritance
+class LoggingList extends ArrayList&lt;String&gt; {
+    @Override public boolean add(String s) { log(s); return super.add(s); }
+    // Problem: Also inherits addAll, which calls add repeatedly
+    // If super.addAll() is changed to not use add(), logging breaks silently
+}
+
+// Composition (safer)
+class LoggingList&lt;E&gt; implements List&lt;E&gt; {
+    private final List&lt;E&gt; delegate = new ArrayList&lt;&gt;();
+    
+    @Override public boolean add(E e) { log(e); return delegate.add(e); }
+    @Override public boolean addAll(Collection&lt;? extends E&gt; c) { 
+        c.forEach(this::log); return delegate.addAll(c); // explicit control
+    }
+    // ... other delegations
+}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q83">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">83</span>
+        <span class="q-title">Favor composition over inheritance – why?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <ol>
+<li><strong>Fragile base class problem</strong>: Superclass changes can break subclasses silently</li>
+<li><strong>Deep hierarchies</strong>: Hard to understand, test, maintain</li>
+<li><strong>Single inheritance limit</strong>: Can't extend multiple classes; composition with multiple</li>
+<li><strong>Testing</strong>: Easier to mock a composed dependency than override inherited behavior</li>
+<li><strong>Runtime flexibility</strong>: Can change composed object at runtime; inheritance is compile-time fixed</li>
+<li><strong>Encapsulation preserved</strong>: With inheritance, subclass may depend on parent's internal implementation details</li>
+</ol>
+<p>GoF Gang of Four Design Patterns Principle: "Favor object composition over class inheritance."</p>
+<p>When inheritance IS appropriate: genuine IS-A relationship, LSP is satisfied, the framework/API expects extension (Template Method pattern), shallow hierarchy.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q84">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">84</span>
+        <span class="q-title">Tight coupling vs loose coupling?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><strong>Tight coupling</strong>: Classes are highly dependent on each other's concrete implementations. Changes to one force changes to others.</p>
+<p><strong>Loose coupling</strong>: Classes interact through abstractions (interfaces). Dependencies are minimized and replaceable.</p>
+<pre>// Tight - depends on concrete class
+class OrderController {
+    private EmailService emailService = new SmtpEmailService(); // concrete!
+}
+
+// Loose - depends on abstraction
+class OrderController {
+    private final NotificationService notificationService; // interface
+    
+    public OrderController(NotificationService service) { // injected
+        this.notificationService = service;
+    }
+}</pre>
+<p>Loose coupling enables:</p>
+<ul>
+<li><strong>Testability</strong>: Inject mock/stub in tests</li>
+<li><strong>Flexibility</strong>: Swap implementations without changing dependent code</li>
+<li><strong>Maintainability</strong>: Changes are localized</li>
+</ul>
+<p>Metrics: <strong>Afferent coupling (Ca)</strong> – how many depend on this. <strong>Efferent coupling (Ce)</strong> – how many this depends on. <strong>Instability = Ce / (Ca + Ce)</strong>. Stable components (low instability) should be abstract.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q85">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">85</span>
+        <span class="q-title">Cohesion vs coupling?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><strong>Cohesion</strong>: How <em>related</em> the elements within a module/class are. <strong>High cohesion = good</strong>.</p>
+<p><strong>Coupling</strong>: How <em>dependent</em> modules/classes are on each other. <strong>Low coupling = good</strong>.</p>
+<p>Goal: <strong>High cohesion, low coupling</strong>.</p>
+<p>Types of cohesion (weakest to strongest):</p>
+<ul>
+<li>Coincidental (random things together – worst)</li>
+<li>Logical (similar logic but unrelated)</li>
+<li>Temporal (used at same time)</li>
+<li>Procedural (sequential steps)</li>
+<li>Communicational (work on same data)</li>
+<li>Sequential (output of one feeds next)</li>
+<li>Functional (single well-defined purpose – best)</li>
+</ul>
+<p>Example of poor cohesion:</p>
+<pre>class UtilityBag {
+    void parseXML() {}
+    void sendEmail() {}
+    void calculateTax() {}
+    void compressImage() {}
+}</pre>
+<p>These are unrelated – poor cohesion. Split into <code>XmlParser</code>, <code>EmailService</code>, <code>TaxCalculator</code>, <code>ImageCompressor</code>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q86">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">86</span>
+        <span class="q-title">What is IS-A vs HAS-A?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><strong>IS-A</strong>: Expressed via inheritance or interface implementation.</p>
+<pre>class Dog extends Animal {} // Dog IS-A Animal
+class Circle implements Shape {} // Circle IS-A Shape</pre>
+<p><strong>HAS-A</strong>: Expressed via composition (field containing another object).</p>
+<pre>class Car {
+    private Engine engine; // Car HAS-A Engine
+    private List&lt;Wheel&gt; wheels; // Car HAS-A Wheels
+}</pre>
+<p>Test for IS-A: Substitution test (LSP). Can you use a Dog wherever an Animal is expected? If yes, IS-A is valid. If the subclass breaks parent's contract → relationship is wrong, use HAS-A instead.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q87">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">87</span>
+        <span class="q-title">Marker interfaces?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>A marker interface has <strong>no methods</strong> – it "marks" a class with metadata.</p>
+<pre>public interface Serializable {} // marker
+public interface Cloneable {}    // marker
+public interface Remote {}       // marker</pre>
+<p>The JVM/frameworks check <code>instanceof</code> to determine behavior:</p>
+<pre>if (obj instanceof Serializable) {
+    // proceed with serialization
+}</pre>
+<p><strong>Modern alternative</strong>: <strong>Annotations</strong> (<code>@Serializable</code>, <code>@Entity</code>). More flexible, can carry attributes, don't pollute type hierarchy.</p>
+<p>Marker interfaces still have one advantage: <strong>compile-time type checking</strong>. A method <code>void serialize(Serializable s)</code> only accepts serializable objects at compile time. An annotation-based approach requires runtime checking.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q88">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">88</span>
+        <span class="q-title">Why Serializable is a marker?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p><code>Serializable</code> signals to the Java <strong>Object Serialization</strong> mechanism (ObjectOutputStream/ObjectInputStream) that a class can be serialized to a byte stream.</p>
+<p>No methods needed because:</p>
+<ul>
+<li>The serialization mechanism is implemented in <code>ObjectOutputStream</code> using reflection</li>
+<li>It just needs to know "is this class serializable?" – a boolean property</li>
+<li>No specific method contracts are needed (the serialization logic handles everything)</li>
+</ul>
+<p>If a class doesn't implement <code>Serializable</code> but you try to serialize it: <code>NotSerializableException</code> at runtime.</p>
+<p>Pitfalls:</p>
+<ul>
+<li><code>serialVersionUID</code> should be declared to control version compatibility</li>
+<li>Transient fields are excluded from serialization</li>
+<li>Custom serialization: implement <code>writeObject()</code> / <code>readObject()</code> (private methods found by reflection)</li>
+<li>Serialization security issues: constructor bypass, deserialization gadget chains (RCE)</li>
+</ul>
+<p>Modern alternatives: Jackson JSON, Protobuf, Avro – all more flexible and safer than Java serialization.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q89">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">89</span>
+        <span class="q-title">Abstract class vs interface?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <table>
+<tr><th>Aspect</th><th>Abstract Class</th><th>Interface</th></tr>
+<tr><td>Instantiation</td><td>No</td><td>No</td></tr>
+<tr><td>Multiple inheritance</td><td>No (single)</td><td>Yes (multiple)</td></tr>
+<tr><td>Instance fields</td><td>Yes</td><td>No (only static final)</td></tr>
+<tr><td>Constructors</td><td>Yes</td><td>No</td></tr>
+<tr><td>Method implementations</td><td>Yes (can mix)</td><td>Default/static only (Java 8+)</td></tr>
+<tr><td>Access modifiers</td><td>Any</td><td>Methods public by default</td></tr>
+<tr><td><code>extends</code> / <code>implements</code></td><td><code>extends</code></td><td><code>implements</code></td></tr>
+<tr><td>State</td><td>Can have mutable state</td><td>Cannot have instance state</td></tr>
+</table>
+<p><strong>Use abstract class when</strong>:</p>
+<ul>
+<li>Sharing code among closely related classes</li>
+<li>Non-public members needed</li>
+<li>Need to manage state</li>
+<li>Template Method pattern</li>
+</ul>
+<p><strong>Use interface when</strong>:</p>
+<ul>
+<li>Unrelated classes implement it (Comparable, Serializable)</li>
+<li>Multiple inheritance of type needed</li>
+<li>Defining a type that doesn't care about implementation hierarchy</li>
+</ul>
+<p><strong>Java 8+ blurred the lines</strong>: Default methods in interfaces allow code sharing. But interfaces still can't have instance state.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q90">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">90</span>
+        <span class="q-title">Multiple inheritance in Java?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Java <strong>doesn't support multiple class inheritance</strong> but supports <strong>multiple interface inheritance</strong>.</p>
+<pre>interface Flyable { default void move() { System.out.println(&quot;flying&quot;); } }
+interface Swimmable { default void move() { System.out.println(&quot;swimming&quot;); } }
+
+class Duck implements Flyable, Swimmable {
+    @Override public void move() {
+        Flyable.super.move(); // must resolve ambiguity
+    }
+}</pre>
+<p>Multiple class inheritance is avoided to prevent the <strong>Diamond Problem</strong> and complexity in method resolution.</p>
+<p>For interfaces: if two interfaces have the same default method, implementing class MUST override it (compiler forces resolution).</p>
+<p>Rule of thumb for multiple interface conflict resolution:</p>
+<ol>
+<li>Class/override wins over interface</li>
+<li>More specific interface wins</li>
+<li>Must explicitly resolve ambiguity</li>
+</ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q91">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">91</span>
+        <span class="q-title">Default methods in interface?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Introduced in Java 8 to allow <strong>adding methods to interfaces without breaking existing implementations</strong>.</p>
+<pre>interface Collection&lt;E&gt; {
+    // New in Java 8 - without default, all existing implementations break
+    default Stream&lt;E&gt; stream() {
+        return StreamSupport.stream(spliterator(), false);
+    }
+    
+    default void forEach(Consumer&lt;? super E&gt; action) {
+        for (E e : this) action.accept(e);
+    }
+}</pre>
+<p>Use cases:</p>
+<ol>
+<li><strong>Evolving APIs</strong>: Add new methods without breaking existing code</li>
+<li><strong>Mixin-like behavior</strong>: Provide optional implementations</li>
+<li><strong>Interface adapter pattern</strong>: Interface with default no-ops; class overrides only needed</li>
+</ol>
+<p>Pitfalls:</p>
+<ul>
+<li>Diamond problem must be resolved explicitly</li>
+<li>Default methods complicate interface design ("fat interface")</li>
+<li>They DO have implementations but NOT state – can call other interface methods and parameters</li>
+</ul>
+<p>Static methods in interfaces (Java 8): <code>interface Comparator&lt;T&gt; { static &lt;T&gt; Comparator&lt;T&gt; naturalOrder() {...} }</code></p>
+<p>Private methods in interfaces (Java 9): Share code between default methods.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q92">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">92</span>
+        <span class="q-title">Diamond problem in Java?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>The diamond problem occurs in multiple inheritance when a class inherits from two classes that share a common ancestor with a conflicting method.</p>
+<pre>    A (move())
+   / \
+  B   C (both inherit/override move())
+   \ /
+    D (which move() to use?)</pre>
+<p>Java solves this for classes by <strong>not allowing multiple class inheritance</strong>.</p>
+<p>For interfaces (Java 8+ with defaults):</p>
+<pre>interface A { default void hello() { print(&quot;A&quot;); } }
+interface B extends A { default void hello() { print(&quot;B&quot;); } }
+interface C extends A { default void hello() { print(&quot;C&quot;); } }
+
+class D implements B, C {
+    // Must override to resolve ambiguity
+    @Override public void hello() {
+        B.super.hello(); // explicit
+    }
+}</pre>
+<p>The rule: A <strong>class override</strong> always wins over interface defaults. A <strong>more specific interface</strong> wins over less specific. Otherwise, must manually resolve.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q93">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">93</span>
+        <span class="q-title">When to use abstract class?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <ol>
+<li><strong>Template Method Pattern</strong>: Skeleton algorithm with steps for subclasses to fill in</li>
+</ol>
+<pre>abstract class DataProcessor {
+    // Template method
+    final void process() { readData(); processData(); writeData(); }
+    
+    abstract void readData();
+    abstract void processData();
+    void writeData() { /* default impl */ }
+}</pre>
+<ol>
+<li><strong>Common state and behavior</strong>: Subclasses share fields and some implementations</li>
+</ol>
+<pre>abstract class Vehicle {
+    protected String brand; // shared state
+    protected int year;
+    
+    public abstract void fuelType();
+    
+    public String describe() { // shared behavior
+        return brand + &quot; (&quot; + year + &quot;)&quot;;
+    }
+}</pre>
+<ol>
+<li><strong>Partial implementation</strong>: Provide some but not all methods</li>
+</ol>
+<ol>
+<li><strong>When you want to control object creation</strong>: <code>protected</code> constructors, factory methods in abstract class</li>
+</ol>
+<ol>
+<li><strong>Close hierarchy</strong>: Abstract class hints "these are the related implementations"</li>
+</ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q94">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">94</span>
+        <span class="q-title">When to use interface?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <ol>
+<li><strong>Defining a contract</strong> for unrelated classes (Comparable, Serializable, Runnable)</li>
+<li><strong>Multiple inheritance of type</strong> needed</li>
+<li><strong>Decoupling</strong> – program to interfaces, not implementations</li>
+<li><strong>Plugin/extension points</strong>: <code>List</code>, <code>Queue</code>, <code>Map</code> – code works with any implementation</li>
+<li><strong>Dependency injection</strong> – inject any implementation at runtime</li>
+<li><strong>Mocking in tests</strong> – easier to mock interfaces than classes</li>
+<li><strong>Functional interfaces</strong> – for lambdas</li>
+</ol>
+<p>Rule of thumb: <strong>Start with interface</strong> unless you have a clear need for abstract class (shared state, template method).</p>
+<p>In API design: expose interfaces, hide implementations. <code>List&lt;T&gt; createList()</code> not <code>ArrayList&lt;T&gt; createList()</code>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q95">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">95</span>
+        <span class="q-title">What is factory pattern?</span>
+        <span class="difficulty diff-mid">MID</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Factory Pattern provides a way to <strong>create objects without specifying the exact concrete class</strong>.</p>
+<p><strong>Simple Factory</strong> (not a GoF pattern):</p>
+<pre>class ShapeFactory {
+    public static Shape create(String type) {
+        return switch (type) {
+            case &quot;circle&quot; -&gt; new Circle();
+            case &quot;rectangle&quot; -&gt; new Rectangle();
+            default -&gt; throw new IllegalArgumentException();
+        };
+    }
+}</pre>
+<p><strong>Factory Method</strong> (GoF):</p>
+<pre>abstract class Application {
+    abstract Button createButton(); // factory method
+    
+    void render() {
+        Button btn = createButton(); // uses factory method
+        btn.paint();
+    }
+}
+
+class WindowsApp extends Application {
+    @Override Button createButton() { return new WindowsButton(); }
+}</pre>
+<p><strong>Abstract Factory</strong>:</p>
+<pre>interface GUIFactory {
+    Button createButton();
+    Checkbox createCheckbox();
+}
+
+class WindowsFactory implements GUIFactory { ... }
+class MacFactory implements GUIFactory { ... }</pre>
+<p>Use cases: Spring's <code>BeanFactory</code>, <code>ConnectionFactory</code>, JDBC <code>DriverManager.getConnection()</code>, <code>Calendar.getInstance()</code>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q96">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">96</span>
+        <span class="q-title">Singleton pattern pitfalls?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <pre>public class Singleton {
+    private static Singleton instance;
+    private Singleton() {}
+    public static Singleton getInstance() {
+        if (instance == null) instance = new Singleton(); // NOT thread safe!
+        return instance;
+    }
+}</pre>
+<p><strong>Pitfalls</strong>:</p>
+<ol>
+<li><strong>Thread safety</strong>: Multiple threads may create multiple instances</li>
+<li><strong>Testing</strong>: Difficult to mock/replace; carries state between tests</li>
+<li><strong>Global state</strong>: Implicit dependency; hard to trace</li>
+<li><strong>Classloader issues</strong>: Multiple classloaders → multiple instances</li>
+<li><strong>Serialization</strong>: Deserializing creates new instance (override <code>readResolve()</code>)</li>
+<li><strong>Reflection</strong>: <code>getDeclaredConstructor().setAccessible(true)</code> can bypass private constructor</li>
+</ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q97">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">97</span>
+        <span class="q-title">Thread-safe singleton?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <pre>// Approach 1: Synchronized method (slow)
+public static synchronized Singleton getInstance() { ... }
+
+// Approach 2: Double-checked locking (Java 5+, needs volatile)
+public class Singleton {
+    private volatile static Singleton instance;
+    
+    public static Singleton getInstance() {
+        if (instance == null) {
+            synchronized (Singleton.class) {
+                if (instance == null) {
+                    instance = new Singleton();
+                }
+            }
+        }
+        return instance;
+    }
+}
+
+// Approach 3: Initialization-on-demand holder (best - lazy, thread-safe, no sync overhead)
+public class Singleton {
+    private static class Holder {
+        static final Singleton INSTANCE = new Singleton(); // initialized when Holder is loaded
+    }
+    public static Singleton getInstance() { return Holder.INSTANCE; }
+}
+
+// Approach 4: Enum (simplest, handles serialization and reflection)
+public enum Singleton {
+    INSTANCE;
+    public void doSomething() { ... }
+}</pre>
+<p><strong>Best practice</strong>: Enum singleton (Josh Bloch recommendation) or Holder idiom. In Spring: just use <code>@Bean</code> – Spring manages singleton scope.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q98">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">98</span>
+        <span class="q-title">Builder pattern use case?</span>
+        <span class="difficulty diff-exp">EXPERT</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Builder separates <strong>complex object construction</strong> from its representation.</p>
+<pre>// Without builder (constructor hell)
+User user = new User(&quot;Alice&quot;, &quot;alice@email.com&quot;, 30, &quot;New York&quot;, true, &quot;ADMIN&quot;, null, null);
+
+// With builder
+User user = User.builder()
+    .name(&quot;Alice&quot;)
+    .email(&quot;alice@email.com&quot;)
+    .age(30)
+    .city(&quot;New York&quot;)
+    .active(true)
+    .role(&quot;ADMIN&quot;)
+    .build();</pre>
+<p>Use when:</p>
+<ol>
+<li>Many constructor parameters (especially optional ones)</li>
+<li>Immutable object with many fields</li>
+<li>Step-by-step construction</li>
+<li>Complex validation before construction</li>
+</ol>
+<p>Implementation styles:</p>
+<ul>
+<li>Classic GoF: Director + ConcreteBuilder</li>
+<li>Fluent/chained (most common in Java): <code>return this</code> from setters</li>
+<li>Lombok <code>@Builder</code>: Auto-generates builder</li>
+<li>Record with <code>with</code> methods pattern</li>
+</ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q99">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">99</span>
+        <span class="q-title">Prototype pattern?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Create new objects by <strong>copying (cloning) existing objects</strong>.</p>
+<pre>interface Prototype {
+    Prototype clone();
+}
+
+class ConcretePrototype implements Cloneable {
+    private List&lt;String&gt; items;
+    
+    @Override protected ConcretePrototype clone() {
+        try {
+            ConcretePrototype clone = (ConcretePrototype) super.clone();
+            clone.items = new ArrayList&lt;&gt;(this.items); // deep copy mutable fields
+            return clone;
+        } catch (CloneNotSupportedException e) { throw new RuntimeException(e); }
+    }
+}</pre>
+<p>Java's <code>Cloneable</code> + <code>Object.clone()</code> is notoriously broken:</p>
+<ul>
+<li><code>clone()</code> is protected in Object</li>
+<li><code>Cloneable</code> is a marker but <code>Object.clone()</code> must still be overridden</li>
+<li>Default clone is <strong>shallow</strong> – must manually deep copy mutable fields</li>
+</ul>
+<p>Modern alternative: Copy constructor, <code>BeanUtils.copyProperties()</code>, serialization-based copy, or just <code>new</code> + manual copying.</p>
+<p>Use cases: Creating objects when construction is expensive, creating snapshots/undo functionality.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q100">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">100</span>
+        <span class="q-title">. Strategy pattern?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Define a family of algorithms, encapsulate each, and make them <strong>interchangeable</strong>.</p>
+<pre>interface SortStrategy {
+    void sort(int[] data);
+}
+
+class BubbleSort implements SortStrategy {
+    public void sort(int[] data) { ... }
+}
+
+class QuickSort implements SortStrategy {
+    public void sort(int[] data) { ... }
+}
+
+class DataProcessor {
+    private SortStrategy strategy;
+    
+    public DataProcessor(SortStrategy strategy) {
+        this.strategy = strategy;
+    }
+    
+    public void setStrategy(SortStrategy s) { this.strategy = s; }
+    
+    public void process(int[] data) {
+        strategy.sort(data);
+        // ... more processing
+    }
+}
+
+// Usage
+DataProcessor processor = new DataProcessor(new QuickSort());
+// Change at runtime:
+processor.setStrategy(new BubbleSort());</pre>
+<p>With Java 8: Strategy = functional interface! <code>Function</code>, <code>Predicate</code>, <code>Comparator</code> are all strategies.</p>
+<p>Used heavily in Spring: <code>ResourceLoader</code>, <code>TransactionManager</code>, <code>PasswordEncoder</code>, <code>CacheManager</code>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q101">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">101</span>
+        <span class="q-title">. Observer pattern?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Defines a <strong>one-to-many dependency</strong>: when one object changes state, all dependents are notified automatically.</p>
+<pre>interface Observer { void update(String event); }
+
+class EventBus {
+    private List&lt;Observer&gt; observers = new ArrayList&lt;&gt;();
+    
+    public void subscribe(Observer o) { observers.add(o); }
+    public void unsubscribe(Observer o) { observers.remove(o); }
+    
+    public void publish(String event) {
+        observers.forEach(o -&gt; o.update(event));
+    }
+}</pre>
+<p>Java built-in: <code>java.util.Observable</code> (deprecated Java 9), <code>java.util.EventListener</code>.</p>
+<p>Modern Java: <code>PropertyChangeListener</code>, Spring's <code>ApplicationEventPublisher</code>:</p>
+<pre>@Component
+class OrderService {
+    @Autowired ApplicationEventPublisher publisher;
+    
+    public void createOrder(Order order) {
+        // ...
+        publisher.publishEvent(new OrderCreatedEvent(order));
+    }
+}
+
+@Component
+class EmailService {
+    @EventListener
+    public void onOrderCreated(OrderCreatedEvent event) { sendEmail(event.getOrder()); }
+}</pre>
+<p>Reactive: Observer pattern at scale = Reactive Streams (RxJava, Project Reactor).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q102">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">102</span>
+        <span class="q-title">. Decorator pattern?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Dynamically <strong>add responsibilities to objects</strong> without modifying their class.</p>
+<pre>interface Coffee { double cost(); String description(); }
+
+class SimpleCoffee implements Coffee {
+    public double cost() { return 1.0; }
+    public String description() { return &quot;Coffee&quot;; }
+}
+
+abstract class CoffeeDecorator implements Coffee {
+    protected Coffee wrapped;
+    public CoffeeDecorator(Coffee c) { this.wrapped = c; }
+}
+
+class MilkDecorator extends CoffeeDecorator {
+    public MilkDecorator(Coffee c) { super(c); }
+    public double cost() { return wrapped.cost() + 0.5; }
+    public String description() { return wrapped.description() + &quot;, Milk&quot;; }
+}
+
+// Usage
+Coffee coffee = new MilkDecorator(new MilkDecorator(new SimpleCoffee()));
+// Cost: 2.0, Description: &quot;Coffee, Milk, Milk&quot;</pre>
+<p>Java IO is decorator pattern:</p>
+<pre>new BufferedInputStream(new FileInputStream(&quot;file.txt&quot;))
+new PrintWriter(new BufferedWriter(new FileWriter(&quot;out.txt&quot;)))</pre>
+<p>Spring's <code>BeanDefinitionDecorator</code>, cache proxies, transaction proxies.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q103">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">103</span>
+        <span class="q-title">. Chain of Responsibility?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Pass a request along a <strong>chain of handlers</strong> until one handles it.</p>
+<pre>abstract class Handler {
+    protected Handler next;
+    
+    public Handler setNext(Handler next) { this.next = next; return next; }
+    
+    public abstract void handle(Request request);
+}
+
+class AuthHandler extends Handler {
+    public void handle(Request request) {
+        if (!request.isAuthenticated()) { System.out.println(&quot;Auth failed&quot;); return; }
+        if (next != null) next.handle(request);
+    }
+}
+
+class LoggingHandler extends Handler {
+    public void handle(Request request) {
+        log(request);
+        if (next != null) next.handle(request);
+    }
+}
+
+// Setup chain
+Handler chain = new AuthHandler();
+chain.setNext(new LoggingHandler()).setNext(new BusinessHandler());
+chain.handle(request);</pre>
+<p>Used in: Servlet filters, Spring Security filter chain, Spring MVC interceptors, logging framework handlers.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q104">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">104</span>
+        <span class="q-title">. Command pattern?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <p>Encapsulate a <strong>request as an object</strong>, allowing parameterization, queuing, logging, and undo.</p>
+<pre>interface Command {
+    void execute();
+    void undo();
+}
+
+class TextEditor {
+    StringBuilder text = new StringBuilder();
+    
+    void appendText(String s) { text.append(s); }
+    void deleteText(int from, int to) { text.delete(from, to); }
+}
+
+class AppendCommand implements Command {
+    private TextEditor editor;
+    private String text;
+    
+    public AppendCommand(TextEditor e, String t) { editor = e; text = t; }
+    public void execute() { editor.appendText(text); }
+    public void undo() { editor.deleteText(editor.text.length() - text.length(), editor.text.length()); }
+}
+
+class CommandHistory {
+    private Deque&lt;Command&gt; history = new ArrayDeque&lt;&gt;();
+    
+    public void executeCommand(Command cmd) { cmd.execute(); history.push(cmd); }
+    public void undoLastCommand() { if (!history.isEmpty()) history.pop().undo(); }
+}</pre>
+<p>Used in: Transaction management, Undo/Redo, Job queuing, Spring Batch steps.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="q105">
+      <div class="card-header" onclick="toggle(this)">
+        <span class="q-num">105</span>
+        <span class="q-title">. Anti-patterns in Java?</span>
+        <span class="difficulty diff-adv">ADVANCED</span>
+        <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="card-body">
+        <div class="card-inner">
+          <div class="answer">
+            <ol>
+<li><strong>God Class</strong>: One class that does everything. Solution: decompose.</li>
+</ol>
+<ol>
+<li><strong>Anemic Domain Model</strong>: Domain objects are just data bags; all logic in services. Solution: Move logic into domain objects (rich domain model).</li>
+</ol>
+<ol>
+<li><strong>Singleton overuse</strong>: Using singletons where DI would be better.</li>
+</ol>
+<ol>
+<li><strong>String concatenation in loops</strong>: <code>str += value</code> in loop creates O(n²) objects. Use <code>StringBuilder</code>.</li>
+</ol>
+<ol>
+<li><strong>Catching Exception/Throwable broadly</strong>: Swallows unexpected errors. Catch specific exceptions.</li>
+</ol>
+<ol>
+<li><strong>Returning null</strong>: Causes NPE. Return Optional, empty collection, or throw exception.</li>
+</ol>
+<ol>
+<li><strong>Premature optimization</strong>: Micro-optimizing before profiling. Profile first.</li>
+</ol>
+<ol>
+<li><strong>Magic numbers/strings</strong>: <code>if (status == 3)</code> – use constants or enums.</li>
+</ol>
+<ol>
+<li><strong>Long parameter lists</strong>: <code>void create(String a, String b, int c, boolean d, ...)</code> – use builder or parameter objects.</li>
+</ol>
+<ol>
+<li><strong>Dead code</strong>: Unused methods/fields. Remove or it creates confusion.</li>
+</ol>
+<ol>
+<li><strong>Incorrect synchronization</strong>: <code>if (map != null) { synchronized(map) {} }</code> – checking null outside sync.</li>
+</ol>
+<ol>
+<li><strong>Not closing resources</strong>: Memory/connection leaks. Use try-with-resources.</li>
+</ol>
+<ol>
+<li><strong>Excessive inheritance</strong>: Deep hierarchies. Prefer composition.</li>
+</ol>
+<ol>
+<li><strong>Static state abuse</strong>: Static mutable state is global, untestable, thread-unsafe.</li>
+</ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="height:60px"></div>
+  </div>
+</div>
+
+<script>
+function toggle(header) {
+  const card = header.parentElement;
+  card.classList.toggle('open');
+}
+let allExpanded = false;
+function toggleAll() {
+  allExpanded = !allExpanded;
+  document.querySelectorAll('.card').forEach(c => {
+    if (allExpanded) c.classList.add('open'); else c.classList.remove('open');
+  });
+  const btn = document.querySelector('.expand-all');
+  if (btn) btn.textContent = allExpanded ? 'Collapse All' : 'Expand All';
+}
+let activeFilter = 'all';
+function filterBy(level, btn) {
+  activeFilter = level;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+function filterCards() { applyFilters(); }
+function applyFilters() {
+  const input = document.getElementById('searchInput');
+  const query = input ? input.value.toLowerCase() : '';
+  document.querySelectorAll('.card').forEach(card => {
+    const title = card.querySelector('.q-title') ? card.querySelector('.q-title').textContent.toLowerCase() : '';
+    const body = card.querySelector('.answer') ? card.querySelector('.answer').textContent.toLowerCase() : '';
+    const diff = card.querySelector('.difficulty');
+    const diffClass = diff ? diff.className : '';
+    const matchesText = !query || title.includes(query) || body.includes(query);
+    const matchesFilter = activeFilter === 'all' || diffClass.includes('diff-' + activeFilter);
+    if (matchesText && matchesFilter) {
+      card.style.display = '';
+      if (query) card.classList.add('open');
+    } else {
+      card.style.display = 'none';
+    }
+  });
+  document.querySelectorAll('.section-title').forEach(st => {
+    let next = st.nextElementSibling;
+    let hasVisible = false;
+    while (next && !next.classList.contains('section-title')) {
+      if (next.style.display !== 'none') hasVisible = true;
+      next = next.nextElementSibling;
+    }
+    st.style.display = hasVisible ? '' : 'none';
+  });
+}
+function scrollToCard(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    el.classList.add('open', 'highlighted');
+    setTimeout(() => el.classList.remove('highlighted'), 2000);
+    document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+    const link = document.querySelector('.sidebar-link[data-target="' + id + '"]');
+    if (link) link.classList.add('active');
+  }
+}
+const observer = typeof IntersectionObserver !== 'undefined' ? new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+      const link = document.querySelector('.sidebar-link[data-target="' + id + '"]');
+      if (link) link.classList.add('active');
+    }
+  });
+}, { threshold: 0.3, rootMargin: '-100px 0px -50% 0px' }) : null;
+if (observer) document.querySelectorAll('.card[id]').forEach(c => observer.observe(c));
+</script>
+
+</body>
+</html>
