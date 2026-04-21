@@ -19,7 +19,7 @@ A comprehensive static site for Java interview preparation at senior/10-year exp
 1. Create a repo (e.g. `Java_material`)
 2. Copy all `.html` files to the repo root
 3. Go to **Settings → Pages → Source → Deploy from branch → main / root**
-4. Your site will be live at `https://krupal01.github.io/java_material/`
+4. Your site will be live at https://krupal01.github.io/java_material/
 
 ## 🗂️ File Structure
 
